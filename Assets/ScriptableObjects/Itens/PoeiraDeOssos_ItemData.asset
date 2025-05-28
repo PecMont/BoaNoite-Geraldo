@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a669bf63bc5f8f14e9989651a3c14861, type: 3}
+  m_Name: PoeiraDeOssos_ItemData
+  m_EditorClassIdentifier: 
+  id: 0843d05f-43ec-4f68-b8d7-d4d024f7d197
+  itemName: Poeira de Ossos
+  description: 'Um punhado de ossos triturados, emana uma energia fraca.
+
+'
+  icon: {fileID: 0}
+  itemType: 3
+  itemPrefab: {fileID: 0}
+  isStackable: 1
+  maxStackSize: 20
+  isUsable: 0
+  isCombinable: 0
+  affectsSanity: 0
+  sanityChange: 0
