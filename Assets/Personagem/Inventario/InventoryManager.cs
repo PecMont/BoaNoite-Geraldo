@@ -1,43 +1,40 @@
-// Scripts/InventoryManager.cs
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
-using System; // Necessário para 'Action'
+using System.Linq; // Usaremos para encontrar itens na lista
+using System; // Para usar Action
 
 public class InventoryManager : MonoBehaviour
 {
+    // Singleton: uma forma fácil de acessar o InventoryManager de qualquer outro script
     public static InventoryManager Instance { get; private set; }
 
+    [Header("Configurações do Inventário")]
+    public int maxSlots = 20;
+
     public List<InventorySlot> items = new List<InventorySlot>();
-
-    // IMPORTANTE: Define o número máximo de TIPOS diferentes de itens
-    // que o inventário pode conter. Deve corresponder aos seus slots visuais.
-    public int maxSlots = 10;
-
-    public Action OnInventoryChanged; // Evento para notificar a UI
+    
+    // Evento para notificar mudanças no inventário
+    public event Action OnInventoryChanged;
 
     void Awake()
     {
-        if (Instance != null && Instance != this)
+        // Singleton pattern
+        if (Instance == null)
         {
-            Destroy(gameObject);
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Instance = this;
-            // DontDestroyOnLoad(gameObject); // Descomente se precisar que persista entre cenas
+            Destroy(gameObject);
         }
     }
 
     public bool AddItem(ItemData itemToAdd, int amount = 1)
     {
-        if (itemToAdd == null || amount <= 0)
-        {
-            Debug.LogWarning("Tentativa de adicionar item nulo ou quantidade inválida.");
-            return false;
-        }
+        if (itemToAdd == null || amount <= 0) return false;
 
-        // 1. Tenta empilhar o item se ele já existir e for empilhável
+        // Tenta encontrar um slot existente para itens empilháveis
         if (itemToAdd.isStackable)
         {
             InventorySlot existingSlot = items.FirstOrDefault(slot => slot.itemData.id == itemToAdd.id);
@@ -46,104 +43,69 @@ public class InventoryManager : MonoBehaviour
                 if (existingSlot.quantity + amount <= itemToAdd.maxStackSize)
                 {
                     existingSlot.AddQuantity(amount);
-                    Debug.Log($"Adicionado {amount}x {itemToAdd.itemName} (pilha existente). Total: {existingSlot.quantity}");
-                    OnInventoryChanged?.Invoke();
+                    Debug.Log($"Adicionado {amount}x {itemToAdd.itemName}. Total: {existingSlot.quantity}");
+                    PrintInventory(); // Mostra o inventário no console
+                    OnInventoryChanged?.Invoke(); // Notifica mudança
                     return true;
                 }
                 else
                 {
-                    // Não pode empilhar a quantidade total no slot existente.
-                    // Poderia adicionar o que cabe e tentar criar um novo slot para o restante,
-                    // mas para simplificar, vamos dizer que falha se não couber tudo.
-                    Debug.LogWarning($"Não há espaço para empilhar mais {amount} de {itemToAdd.itemName} no slot existente (max: {itemToAdd.maxStackSize}). Quantidade atual: {existingSlot.quantity}");
-                    return false;
+                    // Se não couber tudo no slot existente, você pode adicionar o restante a um novo slot
+                    // ou simplesmente não adicionar se não houver espaço. Por ora, vamos simplificar.
+                    Debug.LogWarning($"Não há espaço para empilhar mais {amount} de {itemToAdd.itemName} no slot existente.");
+                    // Poderia tentar adicionar o excesso a um novo slot aqui
                 }
             }
         }
 
-        // 2. Se não pôde empilhar (item novo ou não empilhável), tenta adicionar a um novo slot LÓGICO
-        if (items.Count < maxSlots)
+        // Adiciona a um novo slot (se não for empilhável, ou se for empilhável e não existir/slot cheio)
+        if (items.Count < maxSlots) // Verifica limite de slots
         {
-            int amountForNewSlot = amount;
-            if (itemToAdd.isStackable)
-            {
-                // Se for um novo item empilhável, a quantidade não pode exceder o tamanho máximo da pilha
-                amountForNewSlot = Mathf.Min(amount, itemToAdd.maxStackSize);
-            }
-            else if (amount > 1)
-            {
-                // Itens não empilháveis são adicionados um por um, ocupando um slot lógico cada.
-                // Esta função adiciona apenas UM item não empilhável por vez a um novo slot.
-                // Para adicionar múltiplos itens não empilháveis, chame AddItem múltiplas vezes.
-                Debug.LogWarning($"Tentando adicionar {amount} de um item não empilhável ({itemToAdd.itemName}). Apenas 1 será adicionado a este novo slot. Chame AddItem novamente para os demais.");
-                amountForNewSlot = 1;
-            }
-
-            items.Add(new InventorySlot(itemToAdd, amountForNewSlot));
-            Debug.Log($"Adicionado {amountForNewSlot}x {itemToAdd.itemName} a um novo slot lógico.");
-            OnInventoryChanged?.Invoke();
+            items.Add(new InventorySlot(itemToAdd, amount));
+            Debug.Log($"Adicionado {amount}x {itemToAdd.itemName} a um novo slot.");
+            PrintInventory(); // Mostra o inventário no console
+            OnInventoryChanged?.Invoke(); // Notifica mudança
             return true;
         }
-        else
-        {
-            Debug.LogWarning($"Inventário cheio de tipos de itens (maxSlots: {maxSlots})! Não foi possível adicionar o novo tipo de item: {itemToAdd.itemName}.");
-            return false;
-        }
+
+        Debug.LogWarning($"Inventário cheio! Não foi possível adicionar {itemToAdd.itemName}.");
+        return false;
     }
 
     public bool RemoveItem(ItemData itemToRemove, int amount = 1)
     {
         if (itemToRemove == null || amount <= 0) return false;
 
-        InventorySlot slotToRemoveFrom = items.FirstOrDefault(slot => slot.itemData.id == itemToRemove.id);
-
-        if (slotToRemoveFrom != null)
+        InventorySlot slot = items.FirstOrDefault(s => s.itemData.id == itemToRemove.id);
+        if (slot != null)
         {
-            if (slotToRemoveFrom.quantity >= amount)
+            if (slot.quantity >= amount)
             {
-                slotToRemoveFrom.RemoveQuantity(amount); // RemoveQuantity já deve impedir ficar < 0
-                Debug.Log($"Removido {amount}x {itemToRemove.itemName}. Restante: {slotToRemoveFrom.quantity}");
-
-                if (slotToRemoveFrom.quantity <= 0)
+                slot.RemoveQuantity(amount);
+                if (slot.quantity <= 0)
                 {
-                    items.Remove(slotToRemoveFrom);
-                    Debug.Log($"{itemToRemove.itemName} removido completamente (slot lógico).");
+                    items.Remove(slot);
                 }
-                
-                OnInventoryChanged?.Invoke();
+                Debug.Log($"Removido {amount}x {itemToRemove.itemName}");
+                OnInventoryChanged?.Invoke(); // Notifica mudança
                 return true;
             }
-            else
-            {
-                Debug.LogWarning($"Quantidade insuficiente de {itemToRemove.itemName} para remover. Pedido: {amount}, Disponível: {slotToRemoveFrom.quantity}.");
-                return false;
-            }
         }
-        Debug.LogWarning($"{itemToRemove.itemName} não encontrado no inventário para remoção.");
         return false;
     }
 
-    // Método para verificar se o jogador possui uma certa quantidade de um item
-    public bool HasItem(ItemData itemToCheck, int amountRequired = 1)
-    {
-        if (itemToCheck == null || amountRequired <= 0) return false;
-        InventorySlot slot = items.FirstOrDefault(s => s.itemData.id == itemToCheck.id);
-        return slot != null && slot.quantity >= amountRequired;
-    }
-
-    // (O método PrintInventory() pode ser mantido para debugging se você quiser)
+    // Método para mostrar o inventário no console (para teste)
     public void PrintInventory()
     {
-        Debug.Log("--- Inventário Lógico Atual ---");
+        Debug.Log("--- Inventário Atual ---");
         if (items.Count == 0)
         {
             Debug.Log("Vazio.");
         }
-        for(int i = 0; i < items.Count; i++)
+        foreach (InventorySlot slot in items)
         {
-            Debug.Log($"Slot Lógico {i}: {items[i].itemData.itemName} (x{items[i].quantity})");
+            Debug.Log($"{slot.itemData.itemName} (x{slot.quantity})");
         }
-        Debug.Log($"Total de tipos de itens: {items.Count}/{maxSlots}");
-        Debug.Log("-----------------------------");
+        Debug.Log("------------------------");
     }
 }

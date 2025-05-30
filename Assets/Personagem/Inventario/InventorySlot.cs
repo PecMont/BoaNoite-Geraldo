@@ -1,16 +1,15 @@
-// Scripts/InventorySlot.cs
-// (Certifique-se que o nome do arquivo é InventorySlot.cs)
+using UnityEngine;
 
-[System.Serializable] // Permite que seja visto no Inspector e salvo
+[System.Serializable]
 public class InventorySlot
 {
     public ItemData itemData;
     public int quantity;
 
-    public InventorySlot(ItemData item, int amount)
+    public InventorySlot(ItemData itemData, int quantity)
     {
-        itemData = item;
-        quantity = amount;
+        this.itemData = itemData;
+        this.quantity = quantity;
     }
 
     public void AddQuantity(int amount)
@@ -18,13 +17,17 @@ public class InventorySlot
         quantity += amount;
     }
 
-    // MÉTODO QUE ESTAVA FALTANDO OU INCORRETO:
     public void RemoveQuantity(int amount)
     {
         quantity -= amount;
-        if (quantity < 0) // Opcional: garantir que a quantidade não fique negativa
+        if (quantity < 0)
         {
             quantity = 0;
         }
+    }
+
+    public bool IsEmpty()
+    {
+        return quantity <= 0;
     }
 }
