@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a669bf63bc5f8f14e9989651a3c14861, type: 3}
   m_Name: PoeiraDeOssos_ItemData
   m_EditorClassIdentifier: 
-  id: 0843d05f-43ec-4f68-b8d7-d4d024f7d197
+  id: 0a8a7d8e-0e3c-433e-af60-a38d15f3aad1
   itemName: Poeira de Ossos
   description: 'Um punhado de ossos triturados, emana uma energia fraca.
 
