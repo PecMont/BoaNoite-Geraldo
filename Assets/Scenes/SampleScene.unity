@@ -172,7 +172,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 67074798}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f6c934b88581ad47b764aa73bc7731c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b6a206ded47492439e10e259c7dd1f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   inventoryPanel: {fileID: 617715057}
@@ -1111,6 +1111,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a6c353db9feba54ab2a466cf7c99053, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxSlots: 20
+  items: []
 --- !u!4 &496049009
 Transform:
   m_ObjectHideFlags: 0
@@ -1138,8 +1140,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb68eed9852f6940853131c4f826d42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  items: []
-  maxSlots: 10
 --- !u!1 &617715057
 GameObject:
   m_ObjectHideFlags: 0
