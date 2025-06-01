@@ -1,9 +1,8 @@
 using UnityEngine;
 
-public class HorrorLightingController : MonoBehaviour
-{
+public class HorrorLightingController : MonoBehaviour{
     [Header("Atmosfera de Horror")]
-    public Light[] flickeringLights; // Luzes que piscam
+    public Light[] flickeringLights;
     public float flickerSpeed = 0.1f;
     public float flickerIntensity = 0.5f;
     
@@ -12,34 +11,66 @@ public class HorrorLightingController : MonoBehaviour
     public Color emergencyColor = Color.red;
     public float emergencyBlinkSpeed = 2f;
     
-    void Update()
-    {
-        FlickerLights();
-        EmergencyBlink();
+    [Header("Integração com Névoa")]
+    public TerrorFogController fogController;
+    public bool syncFogWithLights = true;
+    
+    void Start(){
+        if (fogController == null)
+            fogController = FindObjectOfType<TerrorFogController>();
     }
     
-    void FlickerLights()
-    {
-        foreach (Light light in flickeringLights)
+    void Update(){
+        FlickerLights();
+        EmergencyBlink();
+        
+        if (syncFogWithLights && fogController != null)
         {
-            if (light != null)
-            {
+            SyncFogWithLighting();
+        }
+    }
+    
+    void FlickerLights(){
+        foreach (Light light in flickeringLights){
+            if (light != null){
                 float noise = Mathf.PerlinNoise(Time.time * flickerSpeed, 0);
                 light.intensity = Mathf.Lerp(flickerIntensity, 1f, noise);
             }
         }
     }
     
-    void EmergencyBlink()
-    {
+    void EmergencyBlink(){
         float blink = Mathf.PingPong(Time.time * emergencyBlinkSpeed, 1);
-        foreach (Light light in emergencyLights)
-        {
-            if (light != null)
-            {
+        foreach (Light light in emergencyLights){
+            if (light != null){
                 light.intensity = blink;
                 light.color = emergencyColor;
             }
+        }
+    }
+    
+    void SyncFogWithLighting(){
+        // Aumentar névoa quando luzes piscam
+        float avgLightIntensity = 0f;
+        int lightCount = 0;
+        
+        foreach (Light light in flickeringLights){
+            if (light != null){
+                avgLightIntensity += light.intensity;
+                lightCount++;
+            }
+        }
+        
+        if (lightCount > 0){
+            avgLightIntensity /= lightCount;
+            float fogIntensity = Mathf.Lerp(0.025f, 0.015f, avgLightIntensity);
+            fogController.SetFogIntensity(fogIntensity);
+        }
+    }
+    
+    public void TriggerTerrorEvent(){
+        if (fogController != null){
+            fogController.ActivateTerrorMode();
         }
     }
 }
