@@ -12,8 +12,7 @@ public enum ItemType // Você pode expandir isso conforme necessário
 }
 
 [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item Data")]
-public class ItemData : ScriptableObject
-{
+public class ItemData : ScriptableObject{
     [Header("Informações Básicas")]
     public string id = System.Guid.NewGuid().ToString(); // Identificador único
     public string itemName = "Novo Item";
@@ -33,12 +32,8 @@ public class ItemData : ScriptableObject
     public bool affectsSanity = false;
     public float sanityChange = 0; // Positivo para restaurar, negativo para diminuir
 
-    // Adicione mais propriedades conforme necessário, como:
-    // public AudioClip useSound;
-    // public string associatedPuzzleID; // Para itens de puzzle
 
-    public virtual void Use()
-    {
+    public virtual void Use(){
         Debug.Log($"Usando {itemName}.");
         // Lógica base de uso. Pode ser sobrescrita em classes filhas se precisar de comportamentos mais complexos.
         // Por exemplo, se for um Chá Calmante, poderia chamar uma função no Player para restaurar sanidade.

@@ -50,10 +50,7 @@ public class InventoryManager : MonoBehaviour
                 }
                 else
                 {
-                    // Se não couber tudo no slot existente, você pode adicionar o restante a um novo slot
-                    // ou simplesmente não adicionar se não houver espaço. Por ora, vamos simplificar.
                     Debug.LogWarning($"Não há espaço para empilhar mais {amount} de {itemToAdd.itemName} no slot existente.");
-                    // Poderia tentar adicionar o excesso a um novo slot aqui
                 }
             }
         }
