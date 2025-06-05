@@ -12,9 +12,9 @@ public class BathroomTileGenerator : MonoBehaviour
     public Color groutColor = Color.black;
 
     [Header("Propriedades do Azulejo e Rejunte")]
-    // AQUI: Valor do tileSize reduzido para azulejos menores
+    // Valor do tileSize reduzido para azulejos menores
     public int tileSize = 32; // Tamanho da parte cerâmica do azulejo (ex: 64, 32, 24, 16)
-    public int groutWidth = 2;  // Largura da linha de rejunte (talvez precise reduzir se o tileSize for muito pequeno)
+    public int groutWidth = 2;  // Largura da linha de rejunte 
 
     [Header("Efeito de Borda Chanfrada/Boleada")]
     [Tooltip("Controla a curvatura da 'caída'. Valores < 1 resultam em bordas mais arredondadas/suaves. Valores > 1 em bordas mais 'sharp' para o centro.")]

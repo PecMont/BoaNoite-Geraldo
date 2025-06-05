@@ -6,9 +6,8 @@ public class ParedeQuartoA : MonoBehaviour
     public int textureWidth = 512;
     public int textureHeight = 512;
 
-    // AQUI: A cor base foi alterada para um tom de amarelo claro
-    public Color baseColor = new Color(0.98f, 0.95f, 0.75f); // Amarelo claro / Creme
-
+    
+    public Color baseColor = new Color(0.98f, 0.95f, 0.75f); // Amarelo claro 
     [Header("Variação Suave da Cor")]
     public float overallVariationScale = 10f;
     public float overallVariationIntensity = 0.05f;

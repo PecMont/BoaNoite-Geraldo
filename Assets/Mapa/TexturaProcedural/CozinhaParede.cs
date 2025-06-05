@@ -6,16 +6,16 @@ public class ParedeCozinha : MonoBehaviour
     public int textureWidth = 512;
     public int textureHeight = 512;
 
-    // Cor base branca ou levemente off-white
+    // Cor base branca 
     public Color baseColor = new Color(0.96f, 0.96f, 0.96f);
 
     [Header("Variação Suave da Cor (Sutil)")]
     public float overallVariationScale = 15f;
-    public float overallVariationIntensity = 0.03f; // Manter sutil para paredes brancas
+    public float overallVariationIntensity = 0.03f;
 
     [Header("Textura da Superfície (Mais Pronunciada)")]
+
     // Escala menor para uma textura mais "pontilhada" ou "granulada".
-    // Experimente valores como 100f, 150f, ou até 200f para texturas mais finas e densas.
     public float surfaceDetailScale = 120f;
     // Intensidade maior para a textura ser mais visível
     public float surfaceDetailIntensity = 0.08f; // Aumentado para mais textura
@@ -31,10 +31,9 @@ public class ParedeCozinha : MonoBehaviour
 
         renderer.material.mainTexture = GenerateWallTexture();
 
-        // Cozinhas podem ter um leve brilho acetinado para facilitar a limpeza
-        // Ainda predominantemente fosco, mas um pouco menos que um quarto.
-        renderer.material.SetFloat("_Glossiness", 0.1f); // Ajuste conforme necessário
-        renderer.material.SetFloat("_Smoothness", 0.15f); // Para Standard Shader
+     
+        renderer.material.SetFloat("_Glossiness", 0.1f); 
+        renderer.material.SetFloat("_Smoothness", 0.15f); 
     }
 
     Texture2D GenerateWallTexture()

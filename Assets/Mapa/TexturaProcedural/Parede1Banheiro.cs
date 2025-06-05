@@ -8,27 +8,27 @@ public class Paarede1Banheiro : MonoBehaviour
     public int textureHeight = 512;
 
     [Header("Cores Base do Carvalho Escuro")]
-    public Color darkColor = new Color(0.2f, 0.13f, 0.08f);  // Um pouco mais escuro
+    public Color darkColor = new Color(0.2f, 0.13f, 0.08f);  
     public Color midColor = new Color(0.35f, 0.25f, 0.18f);
-    public Color lightColor = new Color(0.5f, 0.38f, 0.28f); // Um pouco mais claro para maior contraste
+    public Color lightColor = new Color(0.5f, 0.38f, 0.28f); 
 
     [Header("Parâmetros da Granulação (Veios)")]
     [Tooltip("Escala geral da granulação. Valores menores = veios mais largos.")]
-    public float grainScale = 5.0f; // Levemente ajustado
+    public float grainScale = 5.0f; 
     [Tooltip("Quão esticados os veios são verticalmente.")]
     public float grainStretch = 8.0f;
     [Tooltip("Frequência das ondulações nos veios.")]
     public float waveFrequency = 1.5f;
     [Tooltip("Intensidade das ondulações nos veios.")]
-    public float waveIntensity = 0.06f; // Levemente aumentado
+    public float waveIntensity = 0.06f; 
     [Tooltip("Intensidade do ruído fino que detalha os veios.")]
-    public float fineDetailNoiseIntensity = 0.25f; // AUMENTADO SIGNIFICATIVAMENTE
+    public float fineDetailNoiseIntensity = 0.25f; 
     [Tooltip("Potência de contraste para os veios. >1 aumenta contraste, <1 suaviza.")]
-    public float woodGrainContrast = 1.8f; // NOVO PARÂMETRO
+    public float woodGrainContrast = 1.8f; 
 
     [Header("Micro-Rugosidade da Superfície")]
     [Tooltip("Intensidade da micro-rugosidade. Adiciona 'aspereza' visual.")]
-    public float microRoughnessIntensity = 0.05f; // NOVO PARÂMETRO
+    public float microRoughnessIntensity = 0.05f; 
     [Tooltip("Escala da micro-rugosidade. Valores altos = padrão fino.")]
     public float microRoughnessScale = 250f;
 
@@ -37,7 +37,7 @@ public class Paarede1Banheiro : MonoBehaviour
     public bool enablePlanks = true;
     public int plankWidthPixels = 128;
     public int plankLineWidthPixels = 2;
-    public float plankLineDarkening = 0.2f; // Levemente aumentado
+    public float plankLineDarkening = 0.2f; 
 
 
     void Start()
@@ -51,7 +51,7 @@ public class Paarede1Banheiro : MonoBehaviour
 
         renderer.material.mainTexture = GenerateWoodTexture();
 
-        renderer.material.SetFloat("_Glossiness", 0.25f); // Menos brilho para parecer mais texturizado
+        renderer.material.SetFloat("_Glossiness", 0.25f); 
         renderer.material.SetFloat("_Smoothness", 0.35f);
     }
 
@@ -86,9 +86,8 @@ public class Paarede1Banheiro : MonoBehaviour
                 float contrastedGrain = Mathf.Pow(combinedGrain, woodGrainContrast);
 
                 Color baseWoodColor;
-                // Ajustar a interpolação de cores com base no grão contrastado
-                // Pode ser necessário ajustar esses limiares (0.4f) dependendo do efeito do contraste
-                if (contrastedGrain < 0.45f) // Limiar ajustado levemente
+                
+                if (contrastedGrain < 0.45f) 
                 {
                     baseWoodColor = Color.Lerp(darkColor, midColor, contrastedGrain / 0.45f);
                 }

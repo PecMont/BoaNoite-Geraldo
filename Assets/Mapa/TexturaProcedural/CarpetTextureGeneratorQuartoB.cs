@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Renderer))]
-public class CarpetTextureGeneratorQuartoB : MonoBehaviour
+public class CarpetTexturaQuartoB : MonoBehaviour
 {
     public int width = 512;
     public int height = 512;

@@ -6,15 +6,15 @@ public class ParedeQuartoB : MonoBehaviour
     public int textureWidth = 512;
     public int textureHeight = 512;
 
-    public Color baseColor = new Color(0.9f, 0.88f, 0.85f); // Um bege claro/branco sujo
+    public Color baseColor = new Color(0.9f, 0.88f, 0.85f); 
 
     [Header("Variação Suave da Cor")]
-    public float overallVariationScale = 10f; // Quão "esticada" é a variação suave
-    public float overallVariationIntensity = 0.05f; // Quão forte é essa variação
+    public float overallVariationScale = 10f; 
+    public float overallVariationIntensity = 0.05f; 
 
     [Header("Detalhe Fino/Textura da Tinta")]
-    public float surfaceDetailScale = 80f; // Quão "esticada" é a textura fina
-    public float surfaceDetailIntensity = 0.02f; // Quão forte é essa textura
+    public float surfaceDetailScale = 80f; 
+    public float surfaceDetailIntensity = 0.02f; 
 
     void Start()
     {
@@ -30,8 +30,7 @@ public class ParedeQuartoB : MonoBehaviour
         // Paredes geralmente são foscas
         renderer.material.SetFloat("_Glossiness", 0.05f);
         renderer.material.SetFloat("_Smoothness", 0.05f);
-        // Para o Standard Shader do Unity. Se usar URP/HDRP, pode ser necessário ajustar
-        // apenas _Smoothness ou outras propriedades específicas do shader.
+        
     }
 
     Texture2D GenerateWallTexture()
@@ -47,9 +46,7 @@ public class ParedeQuartoB : MonoBehaviour
                 float xCoord = (float)x / textureWidth;
                 float yCoord = (float)y / textureHeight;
 
-                // 1. Variação suave da cor base
-                // O "- 0.5f" centraliza o ruído Perlin (que vai de 0 a 1) em torno de zero (indo de -0.5 a 0.5)
-                // Isso permite que a variação tanto clareie quanto escureça a cor base.
+                
                 float overallNoise = (Mathf.PerlinNoise(xCoord * overallVariationScale, yCoord * overallVariationScale) - 0.5f) * overallVariationIntensity;
 
                 // 2. Detalhe fino / textura da tinta
