@@ -20,8 +20,8 @@ public class MostrarImagem : MonoBehaviour
 
     void Update()
     {
-        // Teste com a tecla E para simular o resultado
-        if (Input.GetKeyDown(KeyCode.E))
+        // Teste com a tecla J para simular o resultado
+        if (Input.GetKeyDown(KeyCode.J))
         {
             bool resultado = TestarResultado();  // Simula se o jogador venceu ou perdeu
             MostrarMensagem(resultado);         // Chama a função com base no resultado
