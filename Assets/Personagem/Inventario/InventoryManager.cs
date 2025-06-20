@@ -105,4 +105,22 @@ public class InventoryManager : MonoBehaviour
         }
         Debug.Log("------------------------");
     }
+
+    public bool HasItem(ItemData itemToCheck, int amountRequired = 1)
+{
+    // Validação inicial para evitar erros
+    if (itemToCheck == null || amountRequired <= 0)
+    {
+        return false;
+    }
+
+    // Usa LINQ (FirstOrDefault) para procurar na lista 'items' por um slot
+    // cujo itemData tenha o mesmo 'id' do item que estamos procurando.
+    InventorySlot slot = items.FirstOrDefault(s => s.itemData.id == itemToCheck.id);
+
+    // Retorna true APENAS se ambas as condições forem verdadeiras:
+    // 1. O slot foi encontrado (slot != null).
+    // 2. A quantidade no slot encontrado é maior ou igual à quantidade necessária.
+    return slot != null && slot.quantity >= amountRequired;
+}
 }
