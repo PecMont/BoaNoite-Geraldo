@@ -26,11 +26,11 @@ namespace CharacterScript
 
         void Start()
         {
-            characterController = GetComponent<CharacterController>();
+            //characterController = GetComponent<CharacterController>();
 
             // Lock cursor
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            //Cursor.lockState = CursorLockMode.Locked;
+           //Cursor.visible = false;
         }
 
         void Update()

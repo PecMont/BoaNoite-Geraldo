@@ -116,7 +116,7 @@ public class InventoryManager : MonoBehaviour
 
     // Usa LINQ (FirstOrDefault) para procurar na lista 'items' por um slot
     // cujo itemData tenha o mesmo 'id' do item que estamos procurando.
-    InventorySlot slot = items.FirstOrDefault(s => s.itemData.id == itemToCheck.id);
+    InventorySlot slot = items.FirstOrDefault(s => s.itemData.itemName == itemToCheck.itemName);
 
     // Retorna true APENAS se ambas as condições forem verdadeiras:
     // 1. O slot foi encontrado (slot != null).

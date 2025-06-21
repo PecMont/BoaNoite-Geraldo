@@ -62,17 +62,14 @@ public void OpenDoor()
     Debug.Log("Tentando destravar a porta. Verificando itens necessários...");
 
     // Etapa 1: VERIFICAR se o jogador tem TODOS os itens da lista
-    bool hasAllItems = true; // Começamos assumindo que o jogador tem tudo
+    bool hasAllItems = true;
 
-    // Passamos por cada item na nossa lista de requisitos
     foreach (var itemRequerido in requiredItems)
     {
-        // Se o item não for encontrado no inventário do jogador...
         if (!InventoryManager.Instance.HasItem(itemRequerido))
         {
-            Debug.Log($"FALHA NA VERIFICAÇÃO: Jogador NÃO TEM o item '{itemRequerido.itemName}'.");
-            hasAllItems = false; // ...marcamos que ele não tem tudo...
-            break; // ...e paramos de verificar o resto, pois já sabemos que falhou.
+            hasAllItems = false;
+            break;
         }
         else
         {
@@ -120,10 +117,5 @@ public void OpenDoor()
             }
         }
 
-        // Para facilitar os testes, você pode adicionar um OnMouseDown se não tiver um script de interação central
-        private void OnMouseDown()
-        {
-            OpenDoor();
-        }
     }
 }

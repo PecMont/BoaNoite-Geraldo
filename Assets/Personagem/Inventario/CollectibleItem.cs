@@ -15,15 +15,15 @@ public class CollectibleItem : MonoBehaviour
     }
 
     // Chamado quando outro Collider entra no trigger deste objeto
-    private void OnTriggerEnter(Collider other)
+ /*   private void OnTriggerEnter(Collider other)
     {
-        // Verifica se quem encostou é o jogador (você precisa dar a tag "Player" ao seu jogador)
+        // Verifica se quem encostou é o jogador
         if (other.CompareTag("Player"))
         {
             Collect();
         }
     }
-
+*/
     public void Collect()
     {
         if (itemData != null && InventoryManager.Instance != null)

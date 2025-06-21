@@ -12,7 +12,8 @@ public class Movimento : MonoBehaviour
     private float velocidadeVertical = 0f; // Velocidade atual de queda ou subida
 
     // Distância máxima para interagir com objetos como a porta
-    public float distanciaInteracao = 3f;
+    public float distanciaInteracao = 2f;
+    public bool pausarJogo = false; // Variável para controlar se o jogo está pausado
 
     // Variável para controlar a altura do pulo (se você decidir implementar o pulo)
     // public float alturaPulo = 1.5f;
@@ -25,8 +26,7 @@ public class Movimento : MonoBehaviour
         mycamera = Camera.main.transform;
 
         // Trava o cursor no centro da tela e o torna invisível (comum em jogos FPS/TPS)
-        // Cursor.lockState = CursorLockMode.Locked;
-        // Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
@@ -46,13 +46,6 @@ public class Movimento : MonoBehaviour
         if (characterController.isGrounded) // Se o personagem está no chão
         {
             velocidadeVertical = -1f; // Aplica uma pequena força para baixo para manter o personagem no chão
-
-            // // Lógica de Pulo (descomente se quiser usar)
-            // if (Input.GetButtonDown("Jump")) // "Jump" normalmente é a barra de espaço
-            // {
-            //     // Fórmula para calcular a velocidade inicial necessária para atingir a altura do pulo
-            //     velocidadeVertical = Mathf.Sqrt(alturaPulo * -2f * gravidade);
-            // }
         }
         else // Se o personagem está no ar
         {
@@ -78,7 +71,31 @@ public class Movimento : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             TentarAbrirPorta();
+            TentarColetar();
         }
+        // Veriifica se a tecla 'escape' foi pressionada neste frame
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (pausarJogo)
+            {
+                // Se o jogo já está pausado, retoma o jogo
+                pausarJogo = false;
+                // Destrava o cursor
+                Cursor.lockState = CursorLockMode.Locked;
+                // Torna o cursor invisível
+                Cursor.visible = false;
+                // Retoma o jogo
+                Time.timeScale = 1f; // Retoma o jogo
+            }
+            else
+            {
+                // Se o jogo não está pausado, pausa o jogo
+                pausarJogo = true;
+                Cursor.lockState = CursorLockMode.None; // Destrava o cursor
+                Cursor.visible = true; // Torna o cursor visível
+                Time.timeScale = 0f; // Pausa o jogos
+            }
+        } 
     }
 
     // Método para tentar abrir/interagir com uma porta
@@ -102,16 +119,26 @@ public class Movimento : MonoBehaviour
                 // Chama o método público 'OpenDoor()' do script da porta
                 porta.OpenDoor();
             }
-            else
-            {
-                // Se o objeto atingido não tem o script 'Door' (para depuração)
-                Debug.Log(hit.collider.name + " não é uma porta com o script 'Door'.");
-            }
         }
-        else
+    }
+    void TentarColetar()
+    {
+        RaycastHit hit; // Variável para armazenar informações sobre o que o raio atingiu
+
+        // Dispara um raio da posição da câmera, para frente, até a distância de interação.
+        if (Physics.Raycast(mycamera.position, mycamera.forward, out hit, distanciaInteracao))
         {
-            // Se o raio não atingiu nada dentro da distância de interação (para depuração)
-            Debug.Log("Raycast não atingiu nada interativo ao alcance.");
+            // Se o raio atingiu alguma coisa, imprime no console o nome do objeto (para depuração)
+            Debug.Log("Raycast atingiu: " + hit.collider.name);
+
+            // Tenta pegar o componente 'CollectibleItem' do objeto que o raio atingiu.
+            CollectibleItem item = hit.collider.GetComponent<CollectibleItem>();
+
+            if (item != null) // Se o objeto atingido tem o script 'CollectibleItem'
+            {
+                // Chama o método público 'Collect()' do script do item
+                item.Collect();
+            }
         }
     }
 }
