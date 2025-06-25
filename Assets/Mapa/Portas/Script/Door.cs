@@ -1,5 +1,4 @@
-﻿// Nome do arquivo: Door.cs
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,19 +8,22 @@ namespace DoorScript
     [RequireComponent(typeof(AudioSource))]
     public class Door : MonoBehaviour
     {
-        public TMPro.TextMeshProUGUI feedbackText; // Referência ao TextMeshProUGUI para feedback visual
+        public TMPro.TextMeshProUGUI feedbackText;
 
         public bool open;
         public float smooth = 1.0f;
-        float DoorOpenAngle = -90.0f; // Ângulo para a porta aberta
-        float DoorCloseAngle = 0.0f;  // Ângulo para a porta fechada
+
+        // --- MUDANÇA 1: Substituir os ângulos fixos por um Vector3 público ---
+        [Header("Configuração da Abertura")]
+        public Vector3 openRotation = new Vector3(0, -90, 0); // Define a rotação da porta quando ABERTA
+        private Vector3 closeRotation; // Armazena a rotação inicial da porta (fechada)
+
         public AudioSource asource;
         public AudioClip openDoor, closeDoor;
 
         [Header("Requisitos")]
-        // --- MUDANÇA 1: Trocar um único ItemData por uma Lista de ItemData ---
-        public List<ItemData> requiredItems; // Lista de itens necessários para abrir
-        private bool isUnlocked = false; // Garante que a porta seja destrancada apenas uma vez
+        public List<ItemData> requiredItems;
+        private bool isUnlocked = false;
 
         void Start()
         {
@@ -29,7 +31,11 @@ namespace DoorScript
             {
                 asource = GetComponent<AudioSource>();
             }
-            // Se a lista de itens estiver vazia, a porta já começa destrancada
+            
+            // --- MUDANÇA 2: Armazenar a rotação inicial como a rotação "fechada" ---
+            // Isso garante que a porta sempre fechará na posição em que começou no cenário.
+            closeRotation = transform.localEulerAngles;
+
             if (requiredItems == null || requiredItems.Count == 0)
             {
                 isUnlocked = true;
@@ -38,76 +44,72 @@ namespace DoorScript
 
         void Update()
         {
+            // --- MUDANÇA 3: Usar as novas variáveis de rotação ---
             if (open)
             {
-                var target = Quaternion.Euler(0, DoorOpenAngle, 0);
+                // Usa o Vector3 'openRotation' para definir o alvo
+                var target = Quaternion.Euler(openRotation);
                 transform.localRotation = Quaternion.Slerp(transform.localRotation, target, Time.deltaTime * 5 * smooth);
             }
             else
             {
-                var target1 = Quaternion.Euler(0, DoorCloseAngle, 0);
+                // Usa o Vector3 'closeRotation' para definir o alvo
+                var target1 = Quaternion.Euler(closeRotation);
                 transform.localRotation = Quaternion.Slerp(transform.localRotation, target1, Time.deltaTime * 5 * smooth);
             }
         }
 
-        // Dentro do seu script Door.cs, substitua o método OpenDoor por este:
-public void OpenDoor()
-{
-    // Se a porta já está destrancada, ela pode abrir e fechar normalmente
-    if (isUnlocked)
-    {
-        ToggleDoor();
-        return;
-    }
-
-    // --- LÓGICA DE VERIFICAÇÃO ATUALIZADA ---
-    Debug.Log("Tentando destravar a porta. Verificando itens necessários...");
-
-    // Etapa 1: VERIFICAR se o jogador tem TODOS os itens da lista
-    bool hasAllItems = true;
-
-    foreach (var itemRequerido in requiredItems)
-    {
-        if (!InventoryManager.Instance.HasItem(itemRequerido))
+        // O resto do seu código permanece exatamente o mesmo, pois a lógica de
+        // verificação de itens não precisa ser alterada.
+        
+        public void OpenDoor()
         {
-            hasAllItems = false;
-            break;
-        }
-        else
-        {
-            Debug.Log($"SUCESSO NA VERIFICAÇÃO: Jogador TEM o item '{itemRequerido.itemName}'.");
-        }
-    }
+            if (isUnlocked)
+            {
+                ToggleDoor();
+                return;
+            }
 
-    // Etapa 2: AGIR com base no resultado da verificação
-    
-    // Se, após o loop, a variável 'hasAllItems' ainda for 'true'...
-    if (hasAllItems)
-    {
-        Debug.Log("VERIFICAÇÃO COMPLETA: Sucesso! O jogador tem TODOS os itens. Destrancando e abrindo a porta.");
-        isUnlocked = true; // Destranca a porta permanentemente
-        open = true;       // Força a porta a abrir na primeira vez
+            Debug.Log("Tentando destravar a porta. Verificando itens necessários...");
+            
+            bool hasAllItems = true;
+            foreach (var itemRequerido in requiredItems)
+            {
+                if (!InventoryManager.Instance.HasItem(itemRequerido))
+                {
+                    hasAllItems = false;
+                    break;
+                }
+                else
+                {
+                    Debug.Log($"SUCESSO NA VERIFICAÇÃO: Jogador TEM o item '{itemRequerido.itemName}'.");
+                }
+            }
 
-        // Etapa 3: Agora sim, REMOVEMOS todos os itens requeridos do inventário
-        foreach (var itemRequerido in requiredItems)
-        {
-            InventoryManager.Instance.RemoveItem(itemRequerido, 1);
+            if (hasAllItems)
+            {
+                Debug.Log("VERIFICAÇÃO COMPLETA: Sucesso! O jogador tem TODOS os itens. Destrancando e abrindo a porta.");
+                isUnlocked = true;
+                open = true;
+
+                foreach (var itemRequerido in requiredItems)
+                {
+                    InventoryManager.Instance.RemoveItem(itemRequerido, 1);
+                }
+                
+                ClearFeedbackText();
+                feedbackText.text = "Porta destrancada e aberta!!!";
+                Invoke("ClearFeedbackText", 2f);
+                PlaySound();
+            }
+            else
+            {
+                Debug.Log("VERIFICAÇÃO COMPLETA: Falha! Faltam um ou mais itens. A porta continua trancada.");
+                ClearFeedbackText();
+                feedbackText.text = "Porta trancada!!!";
+                Invoke("ClearFeedbackText", 1f);
+            }
         }
-        ClearFeedbackText(); // Limpa o feedback anterior
-        feedbackText.text = "Porta destrancada e aberta!!!";
-        Invoke("ClearFeedbackText", 2f); // Limpa o feedback após 2
-        PlaySound(); // Toca o som de abrir
-    }
-    else // Se 'hasAllItems' se tornou 'false' em algum momento...
-    {
-        Debug.Log("VERIFICAÇÃO COMPLETA: Falha! Faltam um ou mais itens. A porta continua trancada.");
-        ClearFeedbackText(); // Limpa o feedback anterior
-        feedbackText.text = "Porta trancada!!!";
-        Invoke("ClearFeedbackText", 1f); // Limpa o feedback após 2 segundos
-        // Aqui você pode tocar um som de "trancado" se quiser
-        // if (feedbackLockedSound != null) asource.PlayOneShot(feedbackLockedSound);
-    }
-}
 
         private void ToggleDoor()
         {
@@ -123,13 +125,13 @@ public void OpenDoor()
                 asource.Play();
             }
         }
-    private void ClearFeedbackText()
-    {
-       feedbackText.text = ""; // Limpa o texto de feedback
-        feedbackText.color = Color.white; // Restaura a cor do texto para branco
-        feedbackText.fontSize = 30; // Restaura o tamanho da fonte para o
-        feedbackText.alignment = TMPro.TextAlignmentOptions.Center; // Restaura o alinhamento do texto para centralizado
+        
+        private void ClearFeedbackText()
+        {
+            feedbackText.text = "";
+            feedbackText.color = Color.white;
+            feedbackText.fontSize = 30;
+            feedbackText.alignment = TMPro.TextAlignmentOptions.Center;
+        }
     }
-    }
-
 }
