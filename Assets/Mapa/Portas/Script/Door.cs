@@ -9,6 +9,8 @@ namespace DoorScript
     [RequireComponent(typeof(AudioSource))]
     public class Door : MonoBehaviour
     {
+        public TMPro.TextMeshProUGUI feedbackText; // Referência ao TextMeshProUGUI para feedback visual
+
         public bool open;
         public float smooth = 1.0f;
         float DoorOpenAngle = -90.0f; // Ângulo para a porta aberta
@@ -91,12 +93,17 @@ public void OpenDoor()
         {
             InventoryManager.Instance.RemoveItem(itemRequerido, 1);
         }
-
+        ClearFeedbackText(); // Limpa o feedback anterior
+        feedbackText.text = "Porta destrancada e aberta!!!";
+        Invoke("ClearFeedbackText", 2f); // Limpa o feedback após 2
         PlaySound(); // Toca o som de abrir
     }
     else // Se 'hasAllItems' se tornou 'false' em algum momento...
     {
         Debug.Log("VERIFICAÇÃO COMPLETA: Falha! Faltam um ou mais itens. A porta continua trancada.");
+        ClearFeedbackText(); // Limpa o feedback anterior
+        feedbackText.text = "Porta trancada!!!";
+        Invoke("ClearFeedbackText", 1f); // Limpa o feedback após 2 segundos
         // Aqui você pode tocar um som de "trancado" se quiser
         // if (feedbackLockedSound != null) asource.PlayOneShot(feedbackLockedSound);
     }
@@ -116,6 +123,13 @@ public void OpenDoor()
                 asource.Play();
             }
         }
-
+    private void ClearFeedbackText()
+    {
+       feedbackText.text = ""; // Limpa o texto de feedback
+        feedbackText.color = Color.white; // Restaura a cor do texto para branco
+        feedbackText.fontSize = 30; // Restaura o tamanho da fonte para o
+        feedbackText.alignment = TMPro.TextAlignmentOptions.Center; // Restaura o alinhamento do texto para centralizado
     }
+    }
+
 }

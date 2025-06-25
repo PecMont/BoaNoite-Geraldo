@@ -11,6 +11,9 @@ public class Movimento : MonoBehaviour
     private float gravidade = -9.81f; // Valor da gravidade
     private float velocidadeVertical = 0f; // Velocidade atual de queda ou subida
 
+    // Referência ao componente de textmeshpro para feedback ao jogador
+    public TMPro.TextMeshProUGUI feedbackText;
+
     // Distância máxima para interagir com objetos como a porta
     public float distanciaInteracao = 2f;
     public bool pausarJogo = false; // Variável para controlar se o jogo está pausado
@@ -132,13 +135,35 @@ public class Movimento : MonoBehaviour
             Debug.Log("Raycast atingiu: " + hit.collider.name);
 
             // Tenta pegar o componente 'CollectibleItem' do objeto que o raio atingiu.
-            CollectibleItem item = hit.collider.GetComponent<CollectibleItem>();
+            CollectibleItem coleta = hit.collider.GetComponent<CollectibleItem>();
+            NoCollectibleItem usar = hit.collider.GetComponent<NoCollectibleItem>();
 
-            if (item != null) // Se o objeto atingido tem o script 'CollectibleItem'
+            if (coleta != null) // Se o objeto atingido tem o script 'CollectibleItem'
+            {   
+                LimparFeedback(); // Limpa o feedback anterior
+                feedbackText.text = "Item coletado: " + coleta.itemData.itemName; // Atualiza o feedback ao jogador
+                // limpa o texto após 1 segundos
+                Invoke("LimparFeedback", 1f);
+                
+                coleta.Collect();
+            }
+            else if (usar != null) // Se o objeto atingido tem o script 'NoCollectibleItem'
             {
-                // Chama o método público 'Collect()' do script do item
-                item.Collect();
+                LimparFeedback(); // Limpa o feedback anterior
+                string descricao = usar.Use(); // Chama o método Use() do script NoCollectibleItem
+                feedbackText.text = descricao; // Atualiza o feedback ao jogador
+                feedbackText.color = Color.black; // Define a cor do texto como branco
+                feedbackText.fontSize = 50; // Define o tamanho da fonte do texto
+                feedbackText.alignment = TMPro.TextAlignmentOptions.Justified; 
+                Invoke("LimparFeedback", 3f); // Limpa o feedback após 1 segundo
             }
         }
+    }
+    void LimparFeedback()
+    {
+        feedbackText.text = ""; // Limpa o texto de feedback
+        feedbackText.color = Color.white; // Restaura a cor do texto para branco
+        feedbackText.fontSize = 30; // Restaura o tamanho da fonte para o
+        feedbackText.alignment = TMPro.TextAlignmentOptions.Center; // Restaura o alinhamento do texto para centralizado
     }
 }
