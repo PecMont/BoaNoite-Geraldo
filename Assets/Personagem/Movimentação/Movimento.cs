@@ -1,4 +1,6 @@
 using UnityEngine;
+// É importante ter o namespace do seu script Openable aqui.
+using DoorScript;
 
 public class Movimento : MonoBehaviour
 {
@@ -18,152 +20,134 @@ public class Movimento : MonoBehaviour
     public float distanciaInteracao = 2f;
     public bool pausarJogo = false; // Variável para controlar se o jogo está pausado
 
-    // Variável para controlar a altura do pulo (se você decidir implementar o pulo)
-    // public float alturaPulo = 1.5f;
-
     void Awake()
     {
-        // Pega o componente CharacterController anexado a este GameObject
         characterController = GetComponent<CharacterController>();
-        // Pega a transform da câmera principal da cena
         mycamera = Camera.main.transform;
-
-        // Trava o cursor no centro da tela e o torna invisível (comum em jogos FPS/TPS)
         Cursor.lockState = CursorLockMode.Locked;
     }
 
     void Update()
     {
+        // Se o jogo está pausado, não executa nenhuma lógica de movimento ou interação.
+        if (pausarJogo) return;
+
         // --- ROTAÇÃO DO PERSONAGEM ---
-        // Faz o personagem olhar na mesma direção horizontal que a câmera
         transform.eulerAngles = new Vector3(0, mycamera.eulerAngles.y, 0);
 
         // --- INPUT DE MOVIMENTO ---
-        // Pega os inputs dos eixos Horizontal (A/D, Setas Esq/Dir) e Vertical (W/S, Setas Cima/Baixo)
         entradaJogador = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-        // Converte o vetor de entrada do espaço global para o espaço local do personagem,
-        // para que "frente" seja sempre para onde o personagem está olhando.
         entradaJogador = transform.TransformDirection(entradaJogador);
 
-        // --- GRAVIDADE E PULO ---
-        if (characterController.isGrounded) // Se o personagem está no chão
+        // --- GRAVIDADE ---
+        if (characterController.isGrounded)
         {
-            velocidadeVertical = -1f; // Aplica uma pequena força para baixo para manter o personagem no chão
+            velocidadeVertical = -1f;
         }
-        else // Se o personagem está no ar
+        else
         {
-            // Aplica a gravidade continuamente
             velocidadeVertical += gravidade * Time.deltaTime;
         }
 
         // --- APLICAÇÃO DO MOVIMENTO ---
-        // Combina o movimento horizontal (controlado pelo jogador) com o movimento vertical (gravidade/pulo)
         direcaoMovimento = entradaJogador * velocidadeJogador;
         direcaoMovimento.y = velocidadeVertical;
 
-        // Move o personagem usando o CharacterController.
-        // Multiplica por Time.deltaTime para tornar o movimento independente da taxa de quadros (FPS).
-        // CORREÇÃO APLICADA AQUI:
-        if (characterController.enabled) // Só chama Move() se o controller estiver habilitado
+        if (characterController.enabled)
         {
             characterController.Move(direcaoMovimento * Time.deltaTime);
         }
 
-        // --- LÓGICA DE INTERAÇÃO COM A PORTA ---
-        // Verifica se a tecla 'E' foi pressionada neste frame
+        // --- LÓGICA DE INTERAÇÃO ---
         if (Input.GetKeyDown(KeyCode.E))
         {
             TentarAbrirPorta();
             TentarColetar();
         }
-        // Veriifica se a tecla 'escape' foi pressionada neste frame
-        if(Input.GetKeyDown(KeyCode.Escape))
+
+        // --- LÓGICA DE PAUSA ---
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (pausarJogo)
-            {
-                // Se o jogo já está pausado, retoma o jogo
-                pausarJogo = false;
-                // Destrava o cursor
-                Cursor.lockState = CursorLockMode.Locked;
-                // Torna o cursor invisível
-                Cursor.visible = false;
-                // Retoma o jogo
-                Time.timeScale = 1f; // Retoma o jogo
-            }
-            else
-            {
-                // Se o jogo não está pausado, pausa o jogo
-                pausarJogo = true;
-                Cursor.lockState = CursorLockMode.None; // Destrava o cursor
-                Cursor.visible = true; // Torna o cursor visível
-                Time.timeScale = 0f; // Pausa o jogos
-            }
-        } 
+            TogglePause();
+        }
     }
 
-    // Método para tentar abrir/interagir com uma porta
+    // Método para pausar/despausar o jogo
+    void TogglePause()
+    {
+        pausarJogo = !pausarJogo; // Inverte o estado de pausa
+
+        if (pausarJogo)
+        {
+            // Pausa o jogo
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            // Retoma o jogo
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+            Time.timeScale = 1f;
+        }
+    }
+
+    // Método para tentar abrir/interagir com um objeto "Openable"
     void TentarAbrirPorta()
     {
-        RaycastHit hit; // Variável para armazenar informações sobre o que o raio atingiu
-
-        // Dispara um raio da posição da câmera, para frente, até a distância de interação.
-        // Isso simula o jogador "olhando" para algo para interagir.
+        RaycastHit hit;
         if (Physics.Raycast(mycamera.position, mycamera.forward, out hit, distanciaInteracao))
         {
-            // Se o raio atingiu alguma coisa, imprime no console o nome do objeto (para depuração)
             Debug.Log("Raycast atingiu: " + hit.collider.name);
+            
+            // --- MUDANÇA AQUI ---
+            // Tenta pegar o componente 'Openable' em vez de 'Door'.
+            Openable porta = hit.collider.GetComponent<Openable>();
 
-            // Tenta pegar o componente 'Door' do objeto que o raio atingiu.
-            // É importante usar 'DoorScript.Door' se o seu script 'Door' estiver dentro do namespace 'DoorScript'.
-            DoorScript.Door porta = hit.collider.GetComponent<DoorScript.Door>();
-
-            if (porta != null) // Se o objeto atingido tem o script 'Door'
+            if (porta != null)
             {
-                // Chama o método público 'OpenDoor()' do script da porta
+                // Chama o método público 'OpenDoor()' do script Openable.
                 porta.OpenDoor();
             }
         }
     }
+
+    // O método TentarColetar não precisa de mudanças.
     void TentarColetar()
     {
-        RaycastHit hit; // Variável para armazenar informações sobre o que o raio atingiu
-
-        // Dispara um raio da posição da câmera, para frente, até a distância de interação.
+        RaycastHit hit;
         if (Physics.Raycast(mycamera.position, mycamera.forward, out hit, distanciaInteracao))
         {
-            // Se o raio atingiu alguma coisa, imprime no console o nome do objeto (para depuração)
             Debug.Log("Raycast atingiu: " + hit.collider.name);
-
-            // Tenta pegar o componente 'CollectibleItem' do objeto que o raio atingiu.
             CollectibleItem coleta = hit.collider.GetComponent<CollectibleItem>();
             NoCollectibleItem usar = hit.collider.GetComponent<NoCollectibleItem>();
 
-            if (coleta != null) // Se o objeto atingido tem o script 'CollectibleItem'
-            {   
-                LimparFeedback(); // Limpa o feedback anterior
-                feedbackText.text = "Item coletado: " + coleta.itemData.itemName; // Atualiza o feedback ao jogador
-                // limpa o texto após 1 segundos
+            if (coleta != null)
+            {
+                LimparFeedback();
+                feedbackText.text = "Item coletado: " + coleta.itemData.itemName;
                 Invoke("LimparFeedback", 1f);
-                
                 coleta.Collect();
             }
-            else if (usar != null) // Se o objeto atingido tem o script 'NoCollectibleItem'
+            else if (usar != null)
             {
-                LimparFeedback(); // Limpa o feedback anterior
-                string descricao = usar.Use(); // Chama o método Use() do script NoCollectibleItem
-                feedbackText.text = descricao; // Atualiza o feedback ao jogador
-                feedbackText.color = Color.black; // Define a cor do texto como branco
-                feedbackText.fontSize = 50; // Define o tamanho da fonte do texto
-                feedbackText.alignment = TMPro.TextAlignmentOptions.Justified; 
-                Invoke("LimparFeedback", 3f); // Limpa o feedback após 1 segundo
+                LimparFeedback();
+                string descricao = usar.Use();
+                feedbackText.text = descricao;
+                feedbackText.color = Color.black;
+                feedbackText.fontSize = 50;
+                feedbackText.alignment = TMPro.TextAlignmentOptions.Justified;
+                Invoke("LimparFeedback", 3f);
             }
         }
     }
+
     void LimparFeedback()
     {
-        feedbackText.text = ""; // Limpa o texto de feedback
-        feedbackText.color = Color.white; // Restaura a cor do texto para branco
-        feedbackText.fontSize = 30; // Restaura o tamanho da fonte para o
-        feedbackText.alignment = TMPro.TextAlignmentOptions.Center; // Restaura o alinhamento do texto para centralizado
+        feedbackText.text = "";
+        feedbackText.color = Color.white;
+        feedbackText.fontSize = 30;
+        feedbackText.alignment = TMPro.TextAlignmentOptions.Center;
     }
 }
