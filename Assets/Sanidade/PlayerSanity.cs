@@ -68,7 +68,7 @@ public bool isDraining = true;
     public void ChangeSanity(float amount)
     {
         CurrentSanity += amount;
-        Debug.Log($"Sanidade alterada em {amount}. Sanidade atual: {CurrentSanity}/{maxSanity}");
+        //Debug.Log($"Sanidade alterada em {amount}. Sanidade atual: {CurrentSanity}/{maxSanity}");
 
         // Dispara o evento para que a UI e os efeitos possam reagir
         OnSanityChanged?.Invoke(CurrentSanity, maxSanity);

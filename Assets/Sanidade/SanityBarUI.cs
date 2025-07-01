@@ -24,7 +24,7 @@ public class SanityBarUI : MonoBehaviour
         // Isso garante que a barra seja preenchida corretamente, mesmo que tenhamos perdido o evento inicial.
         if (PlayerSanity.Instance != null)
         {
-            Debug.Log("SanityBarUI.Start(): Atualizando a barra com o valor inicial do PlayerSanity.");
+            //Debug.Log("SanityBarUI.Start(): Atualizando a barra com o valor inicial do PlayerSanity.");
             // Atualiza a barra diretamente com os valores atuais do PlayerSanity
             UpdateSanityBar(PlayerSanity.Instance.CurrentSanity, PlayerSanity.Instance.maxSanity);
         }
