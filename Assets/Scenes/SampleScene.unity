@@ -3516,7 +3516,7 @@ GameObject:
   m_Component:
   - component: {fileID: 549645366}
   - component: {fileID: 549645368}
-  - component: {fileID: 549645367}
+  - component: {fileID: 549645369}
   m_Layer: 0
   m_Name: FlashLight
   m_TagString: Untagged
@@ -3539,25 +3539,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 402391128}
   m_LocalEulerAnglesHint: {x: 10, y: 0, z: 0}
---- !u!114 &549645367
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 549645365}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17a94fbcea309fc4e8acaad771184d26, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  flashlight: {fileID: 0}
-  toggleKey: 102
-  batteryLife: 100
-  batteryDrain: 0.01
-  batterySlider: {fileID: 0}
-  batteryText: {fileID: 0}
-  clickSound: {fileID: 0}
 --- !u!108 &549645368
 Light:
   m_ObjectHideFlags: 0
@@ -3623,6 +3604,26 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &549645369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 549645365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 414e25a6718b9074796b71272f88dfe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashlight: {fileID: 0}
+  toggleKey: 102
+  batteryLife: 100
+  batteryDrain: 0.01
+  batterySlider: {fileID: 0}
+  batteryText: {fileID: 0}
+  clickSound: {fileID: 0}
+  offset: {x: 0, y: -0.1, z: 0.5}
 --- !u!1 &617715057
 GameObject:
   m_ObjectHideFlags: 0
