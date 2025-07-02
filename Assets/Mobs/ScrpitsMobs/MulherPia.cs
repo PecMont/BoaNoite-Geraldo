@@ -46,7 +46,6 @@ public class MulherPia : MonoBehaviour
             {
                 PlayerSanity.Instance.ChangeSanity(-insanidadePerda);
                 tempoOlhando = 0f;
-                Debug.LogWarning("--- SANIDADE DIMINUIU! ---");
             }
         }
         else
@@ -60,10 +59,8 @@ public class MulherPia : MonoBehaviour
         // PASSO 1: Checa se o MOB INTEIRO está na tela
         cameraFrustum = GeometryUtility.CalculateFrustumPlanes(mainCamera);
         if (!GeometryUtility.TestPlanesAABB(cameraFrustum, mobRenderer.bounds))
-        {
-            Debug.Log("DEBUG: Mob (MulherPia) está fora do campo de visão da câmera.");
             return false;
-        }
+
 
         // PASSO 2: Mira no PONTO ESPECÍFICO
         Vector3 targetPoint = lookTargetPoint.position;
@@ -71,10 +68,7 @@ public class MulherPia : MonoBehaviour
         // PASSO 3: Checa a distância até o PONTO
         float distancia = Vector3.Distance(mainCamera.transform.position, targetPoint);
         if (distancia > raioDreno)
-        {
-            Debug.Log("DEBUG: Jogador está muito longe do ponto de foco. Distância: " + distancia + " / Raio Máximo: " + raioDreno);
             return false;
-        }
 
         // PASSO 4: Raycast em direção ao PONTO
         Debug.DrawRay(mainCamera.transform.position, (targetPoint - mainCamera.transform.position).normalized * raioDreno, Color.magenta);
@@ -85,20 +79,9 @@ public class MulherPia : MonoBehaviour
         if (Physics.Raycast(ray, out hit, raioDreno + 1f, collisionMask))
         {
             if (hit.transform == lookTargetPoint || hit.transform.IsChildOf(transform))
-            {
-                Debug.Log("DEBUG: SUCESSO! Raycast acertou o ponto de foco.");
                 return true;
-            }
-            else
-            {
-                Debug.Log("DEBUG: Raycast acertou um obstáculo: '" + hit.transform.name + "' na layer: '" + LayerMask.LayerToName(hit.transform.gameObject.layer) + "'");
-            }
         }
-        else
-        {
-            Debug.Log("DEBUG: Raycast não acertou NADA. Verifique se a layer do mob está incluída na Collision Mask.");
-        }
-        
+    
         return false;
     }
 }

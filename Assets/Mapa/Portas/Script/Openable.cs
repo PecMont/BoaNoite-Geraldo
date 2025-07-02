@@ -7,12 +7,13 @@ using UnityEngine;
 // Se você mudar o nome do arquivo para Openable.cs, o script da câmera ainda encontrará o componente.
 namespace DoorScript
 {
+
     [RequireComponent(typeof(AudioSource))]
     public class Openable : MonoBehaviour // --- MUDANÇA: Nome da classe alterado para ser mais genérico.
     {
         // --- NOVO: Enum para escolher o tipo de movimento no Inspector ---
         public enum OpenType { Rotate, Slide }
-
+        public int id; 
         [Header("Configuração Geral")]
         public OpenType openType = OpenType.Rotate; // Escolha entre Porta (Rotate) ou Gaveta (Slide)
         public TMPro.TextMeshProUGUI feedbackText;
@@ -34,6 +35,7 @@ namespace DoorScript
 
         [Header("Requisitos de Itens")]
         public List<ItemData> requiredItems;
+        public int requiredProgress;
         private bool isUnlocked = false;
 
         void Start()
@@ -105,6 +107,15 @@ namespace DoorScript
 
         public void OpenDoor() // O nome do método foi mantido para não quebrar seu outro script
         {
+            // Verifica se o progresso do jogador é suficiente para destravar a porta
+            if(GameProgression.instance.Progresso < requiredProgress)
+            {
+                ClearFeedbackText();
+                
+                feedbackText.text = "Progresso insuficiente!";
+                Invoke("ClearFeedbackText", 1f);
+                return;
+            }
             if (isUnlocked)
             {
                 ToggleDoor();

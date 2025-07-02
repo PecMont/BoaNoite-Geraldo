@@ -6,7 +6,7 @@ public class Movimento : MonoBehaviour
     private Vector3 entradaJogador;
     private Vector3 direcaoMovimento;
     private CharacterController characterController;
-    private float velocidadeJogador = 2f;
+    public float velocidadeJogador = 2f;
     private Transform mycamera;
 
     private float gravidade = -9.81f;
@@ -23,7 +23,6 @@ public class Movimento : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         mycamera = Camera.main.transform;
-        Cursor.lockState = CursorLockMode.Locked;
 
         // --- Pegar o componente Animator do objeto filho ---
         // Usamos GetComponentInChildren porque o modelo 3D (com o Animator) é um filho.
@@ -33,8 +32,6 @@ public class Movimento : MonoBehaviour
     void Update()
     {
         
-        if (pausarJogo) return;
-
         transform.eulerAngles = new Vector3(0, mycamera.eulerAngles.y, 0);
 
         entradaJogador = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
@@ -85,6 +82,10 @@ public class Movimento : MonoBehaviour
         {
             TogglePause();
         }
+        if(Input.GetKeyDown(KeyCode.L)){
+            // aumenta o progresso do jogo
+            GameProgression.instance.Progresso++;
+        }
     }
     
     // O resto do seu código continua igual...
@@ -97,15 +98,15 @@ public class Movimento : MonoBehaviour
 
         if (pausarJogo)
         {
-            Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-            Time.timeScale = 0f;
+            Cursor.lockState = CursorLockMode.None;
+            Time.timeScale = 0f; // Pausa o jogo
         }
         else
         {
-            Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-            Time.timeScale = 1f;
+            Cursor.lockState = CursorLockMode.Locked;
+            Time.timeScale = 1f; // Retorna o jogo ao normal
         }
     }
 
