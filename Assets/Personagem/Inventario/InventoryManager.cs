@@ -9,7 +9,7 @@ public class InventoryManager : MonoBehaviour
     public static InventoryManager Instance { get; private set; }
 
     [Header("Configurações do Inventário")]
-    public int maxSlots = 20;
+    public int maxSlots = 6;
 
     public List<InventorySlot> items = new List<InventorySlot>();
     
