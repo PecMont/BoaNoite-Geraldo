@@ -19,14 +19,8 @@ public class Dormir : MonoBehaviour
             // Verifica se o jogador está perto da cama
             if (Vector3.Distance(transform.position, GameObject.FindWithTag("Player").transform.position) < 2f)
             {
-                DormirJogador();
             }
         }
     }
-    public void DormirJogador()
-    {
-        Debug.Log("Jogador está dormindo...");
 
-        GameProgression.instance.Progresso++; // Define o progresso para 6, indicando que é noite
-    }
 }

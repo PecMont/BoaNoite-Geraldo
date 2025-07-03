@@ -76,6 +76,7 @@ public class Movimento : MonoBehaviour
         {
             TentarAbrirPorta();
             TentarColetar();
+            TentarDormir();
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -116,15 +117,6 @@ public class Movimento : MonoBehaviour
         if (Physics.Raycast(mycamera.position, mycamera.forward, out hit, distanciaInteracao))
         {
             Debug.Log("Raycast atingiu: " + hit.collider.name);
-            if (hit.collider.name == "Quarto_B_Colchão")
-            {
-                Dormir dormir = hit.collider.GetComponent<Dormir>();
-                if (dormir != null)
-                {
-                    dormir.DormirJogador();
-                    return; // Evita continuar se já dormiu
-                }
-            }
             Openable porta = hit.collider.GetComponent<Openable>();
             if (porta != null)
             {
@@ -138,7 +130,6 @@ public class Movimento : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(mycamera.position, mycamera.forward, out hit, distanciaInteracao))
         {
-            Debug.Log("Raycast atingiu: " + hit.collider.name);
             CollectibleItem coleta = hit.collider.GetComponent<CollectibleItem>();
             NoCollectibleItem usar = hit.collider.GetComponent<NoCollectibleItem>();
 
@@ -161,6 +152,28 @@ public class Movimento : MonoBehaviour
             }
         }
     }
+
+    void TentarDormir()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(mycamera.position, mycamera.forward, out hit, distanciaInteracao))
+        {
+            Debug.Log("Raycast atingiu: " + hit.collider.name);
+            Dormir dormir = hit.collider.GetComponent<Dormir>();
+            if (dormir != null)
+            {
+                Debug.Log("Tentando dormir...");
+                if(GameProgression.instance.Progresso == 7 ){
+                    GameProgression.instance.AvancarProgresso();
+                }
+                
+                // Aqui você pode adicionar a lógica para fazer o tempo passar
+                // Por exemplo, mudar o horário do dia ou ativar/desativar luzes
+            }
+        
+        }
+    }
+
 
     void LimparFeedback()
     {

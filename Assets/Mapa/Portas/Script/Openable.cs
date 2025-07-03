@@ -105,6 +105,13 @@ namespace DoorScript
                 }
                 return;
             }
+            if (GameProgression.instance.Progresso < 9 && GameProgression.instance.Progresso > 7 && id == 4){
+                GameProgression.instance.AvancarProgresso();
+            }
+            {
+                // ANTES: GameProgression.instance.Progresso++;
+                GameProgression.instance.AvancarProgresso(); // CORRIGIDO
+            }
             
             // --- MUDANÇA 2 ---
             if (GameProgression.instance.Progresso < 8 && GameProgression.instance.Progresso > 5 && id == 3)
