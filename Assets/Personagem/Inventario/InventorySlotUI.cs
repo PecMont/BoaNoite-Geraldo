@@ -8,6 +8,8 @@ public class InventorySlotUI : MonoBehaviour
     public Image itemIconImage;
     public TextMeshProUGUI quantityText;
 
+    private ItemData currentItemData; // Guarda o item que este slot está mostrando
+
     public void DisplayItem(InventorySlot inventoryItemSlot) // Recebe um InventorySlot do seu sistema lógico
     {
         if (inventoryItemSlot == null || inventoryItemSlot.itemData == null)
@@ -15,6 +17,8 @@ public class InventorySlotUI : MonoBehaviour
             ClearSlot();
             return;
         }
+
+        currentItemData = inventoryItemSlot.itemData;
 
         if (itemIconImage != null)
         {
@@ -38,6 +42,8 @@ public class InventorySlotUI : MonoBehaviour
 
     public void ClearSlot()
     {
+        currentItemData = null; // Limpa o item atual
+
         if (itemIconImage != null)
         {
             itemIconImage.sprite = null;
@@ -48,5 +54,20 @@ public class InventorySlotUI : MonoBehaviour
             quantityText.text = "";
             quantityText.enabled = false;
         }
+    }
+
+    public void OnSlotClicked()
+    {
+        // Se este slot não estiver vazio, informa o InventoryUIManager qual item foi selecionado
+        if (currentItemData != null && InventoryUIManager.Instance != null)
+        {
+            InventoryUIManager.Instance.DisplayItemDetails(currentItemData);
+        }
+        // Opcional: Se o slot estiver vazio, você pode querer limpar o painel de detalhes
+        else if (InventoryUIManager.Instance != null)
+        {
+            InventoryUIManager.Instance.ClearItemDetails();
+        }
+            
     }
 }

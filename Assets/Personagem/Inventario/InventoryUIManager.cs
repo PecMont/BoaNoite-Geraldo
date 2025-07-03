@@ -1,6 +1,8 @@
 // Scripts/InventoryUIManager.cs
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
+using TMPro; 
 
 public class InventoryUIManager : MonoBehaviour
 {
@@ -15,15 +17,48 @@ public class InventoryUIManager : MonoBehaviour
     private List<InventorySlotUI> slotUIs = new List<InventorySlotUI>();
     private bool isInventoryOpen = false;
 
+    [Header("Painel de Detalhes do Item")]
+    public GameObject detailsPanel; // Opcional: para ativar/desativar o painel inteiro
+    public Image selectedItemIcon;
+    public TextMeshProUGUI selectedItemDescription;
+    public GameObject descriptionBackground;
+    public bool cursorLocked = true; // Se o cursor deve ser travado quando o inventário está aberto
+
     void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                Instance = this;
+            }
         }
-        else
+
+        /// Limpa e esconde o painel de detalhes.
+    public void ClearItemDetails()
+    {
+        Debug.Log("Limpando conteúdo do painel de detalhes.");
+
+        if (descriptionBackground != null) 
+        descriptionBackground.SetActive(false);
+
+        
+        // Esta parte do código, que limpa o conteúdo, está correta e deve permanecer.
+        if (selectedItemIcon != null)
         {
-            Instance = this;
+            // Esconde o componente Image para que o ícone desapareça
+            selectedItemIcon.enabled = false; 
+
+            // Também garantimos que não há nenhuma sprite atribuída
+            selectedItemIcon.sprite = null;
+        }
+
+        if (selectedItemDescription != null)
+        {
+            // Limpa o texto da descrição
+            selectedItemDescription.text = ""; 
         }
     }
 
@@ -57,6 +92,7 @@ public class InventoryUIManager : MonoBehaviour
             InventoryManager.Instance.OnInventoryChanged += UpdateUI; // Se inscreve para atualizações
         }
         UpdateUI(); // Atualização inicial
+        ClearItemDetails();
     }
 
     void OnDestroy()
@@ -72,7 +108,9 @@ public class InventoryUIManager : MonoBehaviour
         if (Input.GetKeyDown(inventoryToggleKey))
         {
             ToggleInventory();
+            controllCursor(!isInventoryOpen);
         }
+
     }
 
     public void ToggleInventory()
@@ -115,4 +153,37 @@ public class InventoryUIManager : MonoBehaviour
             }
         }
     }
+    public void DisplayItemDetails(ItemData item)
+    {
+        if (item == null)
+        {
+            ClearItemDetails();
+            return;
+        }
+
+        if (detailsPanel != null) detailsPanel.SetActive(true);
+
+        if (descriptionBackground != null) 
+        descriptionBackground.SetActive(true);
+
+        selectedItemIcon.sprite = item.icon;
+        selectedItemIcon.enabled = (item.icon != null); // Só mostra a imagem se houver um ícone
+
+        selectedItemDescription.text = item.description;
+    }
+
+    public void controllCursor(bool lockCursor)
+    {
+        if (lockCursor)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+    }
+
 }
