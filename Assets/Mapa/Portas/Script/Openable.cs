@@ -110,12 +110,18 @@ namespace DoorScript
             // Verifica se o progresso do jogador é suficiente para destravar a porta
             if(GameProgression.instance.Progresso < requiredProgress)
             {
-                ClearFeedbackText();
                 
-                feedbackText.text = "Progresso insuficiente!";
-                Invoke("ClearFeedbackText", 1f);
+                    if(GameProgression.instance.Progresso < 4 && GameProgression.instance.Progresso > 2 && id == 1)
+                        GameProgression.instance.Progresso++;         
+                    else{
+                        feedbackText.text = "Ainda preciso terminar minnha tarefa antes de abrir esta porta.";
+                        Invoke("Limparfala", 3f);
+                    }
                 return;
             }
+            if(GameProgression.instance.Progresso < 8 && GameProgression.instance.Progresso > 5 && id == 3)
+                    GameProgression.instance.Progresso++;
+
             if (isUnlocked)
             {
                 ToggleDoor();
@@ -149,17 +155,17 @@ namespace DoorScript
                     InventoryManager.Instance.RemoveItem(itemRequerido, 1);
                 }
 
-                ClearFeedbackText();
+                Limparfala();
                 feedbackText.text = "Destrancado!";
-                Invoke("ClearFeedbackText", 2f);
+                Invoke("Limparfala", 2f);
                 PlaySound();
             }
             else
             {
                 Debug.Log("VERIFICAÇÃO COMPLETA: Falha! Faltam um ou mais itens. Continua trancado.");
-                ClearFeedbackText();
+                Limparfala();
                 feedbackText.text = "Trancado!";
-                Invoke("ClearFeedbackText", 1f);
+                Invoke("Limparfala", 1f);
             }
         }
 
@@ -178,12 +184,9 @@ namespace DoorScript
             }
         }
 
-        private void ClearFeedbackText()
-        {
-            feedbackText.text = "";
-            feedbackText.color = Color.white;
-            feedbackText.fontSize = 30;
-            feedbackText.alignment = TMPro.TextAlignmentOptions.Center;
-        }
+    void Limparfala()
+    {        
+        feedbackText.text = "";
+    }
     }
 }

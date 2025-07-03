@@ -39,7 +39,7 @@ public class Sensor : MonoBehaviour
         if (linkedCreature != null)
         {   
             // apaga todos os objetos vinculados com o script
-            foreach (var obj in FindObjectsOfType<Sensor>())
+            foreach (var obj in FindObjectsByType<Sensor>(FindObjectsSortMode.None))
             {
                 if (obj.linkedCreature != null && obj.linkedCreature == linkedCreature)
                 {
