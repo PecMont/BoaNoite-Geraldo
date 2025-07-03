@@ -45,7 +45,7 @@ public class LoopCorredor : MonoBehaviour
         {   
             player.GetComponent<Movimento>().velocidadeJogador = 2f; // Restaura a velocidade do jogador
             // apaga todos os objetos vinculados com o script
-            foreach (var obj in FindObjectsOfType<LoopCorredor>())
+            foreach (var obj in FindObjectsByType<LoopCorredor>(FindObjectsSortMode.None))
             {
                 if (obj.linkedCreature != null && obj.linkedCreature == linkedCreature)
                 {

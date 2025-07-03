@@ -116,6 +116,15 @@ public class Movimento : MonoBehaviour
         if (Physics.Raycast(mycamera.position, mycamera.forward, out hit, distanciaInteracao))
         {
             Debug.Log("Raycast atingiu: " + hit.collider.name);
+            if (hit.collider.name == "Quarto_B_Colchão")
+            {
+                Dormir dormir = hit.collider.GetComponent<Dormir>();
+                if (dormir != null)
+                {
+                    dormir.DormirJogador();
+                    return; // Evita continuar se já dormiu
+                }
+            }
             Openable porta = hit.collider.GetComponent<Openable>();
             if (porta != null)
             {
