@@ -16,19 +16,21 @@ public class Crianca : MonoBehaviour
     public Light flashlight;
     public Collider roomTrigger;
     [Tooltip("Ponto específico no corpo da criança para checagem da lanterna.")]
-    public Transform flashlightTargetPoint; // << NOVO CAMPO!
+    public Transform flashlightTargetPoint;
 
     private NavMeshAgent navMeshAgent;
     private State currentState = State.Idle;
     private bool isPlayerInRoom = false;
+    private Animator animator; // << NOVO
 
     void Awake()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
-        // Validação de todas as referências, incluindo a nova
-        if (playerTransform == null || flashlight == null || roomTrigger == null || flashlightTargetPoint == null)
+        animator = GetComponent<Animator>(); // << NOVO
+
+        if (playerTransform == null || flashlight == null || roomTrigger == null || flashlightTargetPoint == null || animator == null) // << NOVO (adicionado animator)
         {
-            Debug.LogError("Uma ou mais referências não foram definidas no Inspector do script 'Crianca'. O script será desativado.", this);
+            Debug.LogError("Uma ou mais referências não foram definidas no Inspector ou o Animator não foi encontrado. O script será desativado.", this);
             enabled = false;
         }
     }
@@ -42,6 +44,8 @@ public class Crianca : MonoBehaviour
 
     void Update()
     {
+        UpdateAnimation(); // << NOVO
+
         if (!isPlayerInRoom)
         {
             SetState(State.Idle);
@@ -64,6 +68,16 @@ public class Crianca : MonoBehaviour
         {
             UpdateCirclingMovement();
         }
+    }
+    
+    // << NOVO MÉTODO COMPLETO
+    private void UpdateAnimation()
+    {
+        // Pega a velocidade atual do NavMeshAgent (metros por segundo)
+        float speed = navMeshAgent.velocity.magnitude;
+        
+        // Envia essa velocidade para o parâmetro "Speed" que criamos no Animator Controller
+        animator.SetFloat("Speed", speed);
     }
 
     private void SetState(State newState)
@@ -90,8 +104,7 @@ public class Crianca : MonoBehaviour
     private bool IsUnderFlashlight()
     {
         if (!flashlight.enabled) return false;
-
-        // --- LÓGICA ATUALIZADA PARA USAR O PONTO DE ALVO ---
+        
         Vector3 targetPosition = flashlightTargetPoint.position;
         Vector3 directionToTarget = (targetPosition - flashlight.transform.position).normalized;
         float angle = Vector3.Angle(flashlight.transform.forward, directionToTarget);
@@ -102,7 +115,6 @@ public class Crianca : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(flashlight.transform.position, directionToTarget, out hit, flashlight.range))
             {
-                // Verifica se o raio acertou a criança (ou uma de suas partes)
                 if (hit.transform.IsChildOf(this.transform) || hit.transform == this.transform)
                 {
                     Debug.Log("Lanterna está na criança!");

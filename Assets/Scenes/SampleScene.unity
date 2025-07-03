@@ -1509,15 +1509,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 28330025e8282f240b8fde99f5d44033, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.78
+      value: -2.86
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 28330025e8282f240b8fde99f5d44033, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.481
+      value: 0.65
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 28330025e8282f240b8fde99f5d44033, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -15.32
+      value: -15.48
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 28330025e8282f240b8fde99f5d44033, type: 3}
       propertyPath: m_LocalRotation.w
@@ -6031,7 +6031,7 @@ Transform:
   m_GameObject: {fileID: 1116514626}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.9370008, y: 0.53, z: -19.045}
+  m_LocalPosition: {x: -3.9370008, y: 0.35, z: -19.045}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9268,6 +9268,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3453320342ce76345a594a0c7f24447b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  textureWidth: 512
+  textureHeight: 512
+  baseColor: {r: 0.9, g: 0.88, b: 0.85, a: 1}
+  overallVariationScale: 10
+  overallVariationIntensity: 0.05
+  surfaceDetailScale: 80
+  surfaceDetailIntensity: 0.02
 --- !u!1 &1537759625
 GameObject:
   m_ObjectHideFlags: 0
@@ -9283,7 +9290,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &1537759626
 Transform:
@@ -9330,7 +9337,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 88901f69dfc79324c85c6640e20b5eb7, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 2f5eb59940ef2c54182d2b53506a41b5, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1 &1550086788
 GameObject:
