@@ -15,7 +15,7 @@ MonoBehaviour:
   id: b20c1d96-9881-4efd-bcc1-9ac8f15ea44a
   itemName: Novo Item
   description: "Descri\xE7\xE3o do item."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 916f890d9266ddd4ba1cd75afbb46089, type: 3}
   itemType: 1
   itemPrefab: {fileID: 0}
   isStackable: 1
