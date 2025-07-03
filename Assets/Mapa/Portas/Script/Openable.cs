@@ -4,30 +4,26 @@ using System.Linq;
 using UnityEngine;
 
 // O namespace foi mantido para compatibilidade com seu script de câmera.
-// Se você mudar o nome do arquivo para Openable.cs, o script da câmera ainda encontrará o componente.
 namespace DoorScript
 {
-
     [RequireComponent(typeof(AudioSource))]
-    public class Openable : MonoBehaviour // --- MUDANÇA: Nome da classe alterado para ser mais genérico.
+    public class Openable : MonoBehaviour
     {
-        // --- NOVO: Enum para escolher o tipo de movimento no Inspector ---
         public enum OpenType { Rotate, Slide }
-        public int id; 
+        public int id;
         [Header("Configuração Geral")]
-        public OpenType openType = OpenType.Rotate; // Escolha entre Porta (Rotate) ou Gaveta (Slide)
+        public OpenType openType = OpenType.Rotate;
         public TMPro.TextMeshProUGUI feedbackText;
         public float smooth = 1.0f;
         public bool open;
 
         [Header("Configuração de Rotação (Porta)")]
-        public Vector3 openRotation = new Vector3(0, -90, 0); // Rotação da porta quando ABERTA
-        private Vector3 closeRotation; // Rotação inicial da porta (fechada)
+        public Vector3 openRotation = new Vector3(0, -90, 0);
+        private Vector3 closeRotation;
 
-        // --- NOVO: Variáveis para o movimento da gaveta ---
         [Header("Configuração de Movimento (Gaveta)")]
-        public Vector3 openPositionOffset; // O quanto a gaveta deve se mover a partir da posição inicial
-        private Vector3 closePosition; // Posição inicial da gaveta (fechada)
+        public Vector3 openPositionOffset;
+        private Vector3 closePosition;
 
         [Header("Áudio")]
         public AudioSource asource;
@@ -44,11 +40,8 @@ namespace DoorScript
             {
                 asource = GetComponent<AudioSource>();
             }
-
-            // Armazena os estados iniciais (fechado) para ambos os tipos
             closeRotation = transform.localEulerAngles;
-            closePosition = transform.localPosition; // Usamos localPosition para que o movimento seja relativo ao objeto pai
-
+            closePosition = transform.localPosition;
             if (requiredItems == null || requiredItems.Count == 0)
             {
                 isUnlocked = true;
@@ -57,7 +50,6 @@ namespace DoorScript
 
         void Update()
         {
-            // --- MUDANÇA: Usa um switch para decidir qual animação executar ---
             switch (openType)
             {
                 case OpenType.Rotate:
@@ -69,7 +61,6 @@ namespace DoorScript
             }
         }
 
-        // Lógica de animação para rotação (portas)
         void AnimateRotation()
         {
             if (open)
@@ -84,43 +75,43 @@ namespace DoorScript
             }
         }
 
-        // --- NOVO: Lógica de animação para translação (gavetas) ---
         void AnimatePosition()
         {
             if (open)
             {
-                // O alvo é a posição inicial + o deslocamento
                 var targetPosition = closePosition + openPositionOffset;
                 transform.localPosition = Vector3.Lerp(transform.localPosition, targetPosition, Time.deltaTime * 5 * smooth);
             }
             else
             {
-                // O alvo é a posição inicial
                 transform.localPosition = Vector3.Lerp(transform.localPosition, closePosition, Time.deltaTime * 5 * smooth);
             }
         }
 
-        //
-        // O RESTO DO CÓDIGO PERMANECE EXATAMENTE O MESMO
-        // A lógica de destravar e interagir não precisa mudar.
-        //
-
-        public void OpenDoor() // O nome do método foi mantido para não quebrar seu outro script
+        public void OpenDoor()
         {
-            // Verifica se o progresso do jogador é suficiente para destravar a porta
-            if(GameProgression.instance.Progresso < requiredProgress)
+            if (GameProgression.instance.Progresso < requiredProgress)
             {
-                
-                    if(GameProgression.instance.Progresso < 4 && GameProgression.instance.Progresso > 2 && id == 1)
-                        GameProgression.instance.Progresso++;         
-                    else{
-                        feedbackText.text = "Ainda preciso terminar minnha tarefa antes de abrir esta porta.";
-                        Invoke("Limparfala", 3f);
-                    }
+                // --- MUDANÇA 1 ---
+                if (GameProgression.instance.Progresso < 4 && GameProgression.instance.Progresso > 2 && id == 1)
+                {
+                    // ANTES: GameProgression.instance.Progresso++;
+                    GameProgression.instance.AvancarProgresso(); // CORRIGIDO
+                }
+                else
+                {
+                    feedbackText.text = "Ainda preciso terminar minnha tarefa antes de abrir esta porta.";
+                    Invoke("Limparfala", 3f);
+                }
                 return;
             }
-            if(GameProgression.instance.Progresso < 8 && GameProgression.instance.Progresso > 5 && id == 3)
-                    GameProgression.instance.Progresso++;
+            
+            // --- MUDANÇA 2 ---
+            if (GameProgression.instance.Progresso < 8 && GameProgression.instance.Progresso > 5 && id == 3)
+            {
+                // ANTES: GameProgression.instance.Progresso++;
+                GameProgression.instance.AvancarProgresso(); // CORRIGIDO
+            }
 
             if (isUnlocked)
             {
@@ -129,7 +120,6 @@ namespace DoorScript
             }
 
             Debug.Log("Tentando destravar a porta. Verificando itens necessários...");
-
             bool hasAllItems = true;
             foreach (var itemRequerido in requiredItems)
             {
@@ -149,12 +139,10 @@ namespace DoorScript
                 Debug.Log("VERIFICAÇÃO COMPLETA: Sucesso! O jogador tem TODOS os itens. Destrancando e abrindo.");
                 isUnlocked = true;
                 open = true;
-
                 foreach (var itemRequerido in requiredItems)
                 {
                     InventoryManager.Instance.RemoveItem(itemRequerido, 1);
                 }
-
                 Limparfala();
                 feedbackText.text = "Destrancado!";
                 Invoke("Limparfala", 2f);
@@ -184,9 +172,9 @@ namespace DoorScript
             }
         }
 
-    void Limparfala()
-    {        
-        feedbackText.text = "";
-    }
+        void Limparfala()
+        {
+            feedbackText.text = "";
+        }
     }
 }

@@ -1,76 +1,102 @@
 using UnityEngine;
 
-// Esse script vai trocar o sprite do personagem Geraldo
-// para um sprite de emoção específica, como "feliz", "triste", etc.
-// são tres texturas diferentes que o gerando tem(cabeça, tronco e pernas),
-// e cada uma delas tem um sprite diferente para cada emoção.
-public class GeraldoEmo : MonoBehaviour 
-{   
-    [Header("Configurações do Geraldo")]
-    [Tooltip("Sprite do Geraldo quando está normal.")]
-    public Material cabeçaNormal;
-    public Material troncoNormal;
-    public Material pernasNormal;
-    [Tooltip("Sprite do Geraldo na fase Emo.")]
-    public Material cabeçaEmo;
-    public Material troncoEmo;
-    public Material pernasEmo;
-
-    [Header("Onde será aplicado o sprite?")]
-    // os tres objetos que vão receber o sprite do Geraldo
+public class GeraldoEmo : MonoBehaviour
+{
+    [Header("Partes do Corpo do Geraldo")]
     public GameObject cabeçaGeraldo;
     public GameObject troncoGeraldo;
     public GameObject pernasGeraldo;
 
+    [Header("Materiais Normais")]
+    public Material cabeçaNormal;
+    public Material troncoNormal;
+    public Material pernasNormal;
+
+    [Header("Materiais Emo")]
+    public Material cabeçaEmo;
+    public Material troncoEmo;
+    public Material pernasEmo;
+
     [Header("Configurações do Sensor")]
     [Tooltip("A que distância o sensor detecta o jogador.")]
     public float detectionRadius = 1f;
-    [Tooltip("Para qual criatura este sensor está vinculado.")]
-    public GameObject linkedCreature;
 
+    // --- MELHORIA 1: Variáveis para otimização ---
+    private Transform playerTransform; // Para não procurar o jogador a cada frame
+    private bool hasBeenTriggered = false; // Para garantir que a troca de textura aconteça só uma vez
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-// verifica se o jogador está dentro do raio de detecção
+        // Procura o jogador APENAS UMA VEZ
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
         {
-            float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
-            if (distanceToPlayer <= detectionRadius)
-            {
-                Invoke("TrocarTexturaEmo", 3f); // Troca a textura do Geraldo para Emo
-            }
+            playerTransform = player.transform;
         }
         else
         {
-            TrocarTexturaNormal();
+            Debug.LogError("Jogador com a tag 'Player' não encontrado!", this);
+            enabled = false; // Desativa o script se não encontrar o jogador
         }
     }
 
-    void trocarTexturaGeraldo(Material cabeça, Material tronco, Material pernas)
+    void Update()
     {
-        // Troca o sprite do Geraldo
-        cabeçaGeraldo.GetComponent<Renderer>().material = cabeça;
-        troncoGeraldo.GetComponent<Renderer>().material = tronco;
-        pernasGeraldo.GetComponent<Renderer>().material = pernas;
+        // Se o jogador não existe ou se o evento já foi disparado, não faz nada.
+        if (playerTransform == null || hasBeenTriggered)
+        {
+            return;
+        }
+
+        float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+        if (distanceToPlayer <= detectionRadius)
+        {
+            // Marca que o evento foi disparado para não acontecer de novo
+            hasBeenTriggered = true;
+            Debug.Log("Jogador detectado! Geraldo vai entrar na fase Emo em 3 segundos.");
+            Invoke("TrocarTexturaEmo", 3f);
+        }
     }
+
+    // Função genérica para trocar as texturas/materiais
+    void AplicarMateriais(Material cabeça, Material tronco, Material pernas)
+    {
+        // É uma boa prática verificar se as partes do corpo foram atribuídas antes de usá-las
+        if (cabeçaGeraldo != null) cabeçaGeraldo.GetComponent<Renderer>().material = cabeça;
+        if (troncoGeraldo != null) troncoGeraldo.GetComponent<Renderer>().material = tronco;
+        if (pernasGeraldo != null) pernasGeraldo.GetComponent<Renderer>().material = pernas;
+    }
+
     void TrocarTexturaEmo()
     {
-        if(GameProgression.instance.Progresso < 5 && GameProgression.instance.Progresso < 7) GameProgression.instance.Progresso++; // Aumenta o progresso do jogador
-        trocarTexturaGeraldo(cabeçaEmo, troncoEmo, pernasEmo);
-        Invoke("TrocarTexturaNormal", 5f); // Troca a textura do Geraldo de volta para normal após 5 segundos
+        Debug.Log("Geraldo agora está Emo. O progresso será verificado.");
+        
+        // --- MUDANÇA 1 ---
+        // A condição "Progresso < 5 && Progresso < 7" é o mesmo que "Progresso < 5".
+        if (GameProgression.instance.Progresso < 5)
+        {
+            // ANTES: GameProgression.instance.Progresso++;
+            GameProgression.instance.AvancarProgresso(); // CORRIGIDO
+        }
+        
+        AplicarMateriais(cabeçaEmo, troncoEmo, pernasEmo);
+        
+        // Agenda a volta ao normal após 5 segundos
+        Invoke("TrocarTexturaNormal", 5f);
     }
+
     void TrocarTexturaNormal()
     {
-        if(GameProgression.instance.Progresso < 6 && GameProgression.instance.Progresso < 8) GameProgression.instance.Progresso++; // Aumenta o progresso do jogador
-        trocarTexturaGeraldo(cabeçaNormal, troncoNormal, pernasNormal);
+        Debug.Log("Geraldo voltou ao normal. O progresso será verificado.");
+
+        // --- MUDANÇA 2 ---
+        // A condição "Progresso < 6 && Progresso < 8" é o mesmo que "Progresso < 6".
+        if (GameProgression.instance.Progresso < 6)
+        {
+            // ANTES: GameProgression.instance.Progresso++;
+            GameProgression.instance.AvancarProgresso(); // CORRIGIDO
+        }
+        
+        AplicarMateriais(cabeçaNormal, troncoNormal, pernasNormal);
     }
 }
-
