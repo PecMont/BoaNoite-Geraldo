@@ -9,12 +9,16 @@ public class PlayerSanity : MonoBehaviour
     [Header("Configurações de Sanidade")]
     public float maxSanity = 100f;
     private float _currentSanity;
+
+    [Header("UI de Fim de Jogo")]
+    public GameObject gameOverPanel; 
+
     [Header("Dreno de Sanidade com o Tempo")]
     [Tooltip("A quantidade de sanidade que o jogador perde por segundo.")]
-    public float sanityDrainPerSecond = 0.5f; // Exemplo: perde 0.5 de sanidade a cada segundo
+    public float sanityDrainPerSecond = 5.0f; // Exemplo: perde 0.5 de sanidade a cada segundo
 
-[Tooltip("Permite ligar ou desligar o dreno de sanidade (ex: para áreas seguras).")]
-public bool isDraining = true;
+    [Tooltip("Permite ligar ou desligar o dreno de sanidade (ex: para áreas seguras).")]
+    public bool isDraining = true;
 
     // Propriedade pública para acessar a sanidade atual com segurança
     public float CurrentSanity
@@ -37,6 +41,10 @@ public bool isDraining = true;
         else
         {
             Instance = this;
+        }
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(false);
         }
     }
 
@@ -72,5 +80,37 @@ public bool isDraining = true;
 
         // Dispara o evento para que a UI e os efeitos possam reagir
         OnSanityChanged?.Invoke(CurrentSanity, maxSanity);
+
+        if (CurrentSanity <= Mathf.Epsilon)
+        {
+            // Garante que o método não seja chamado múltiplas vezes se a sanidade continuar diminuindo
+            if (this.enabled) 
+            {
+                Morrer();
+            }
+        }
+    }
+
+     private void Morrer()
+    {
+        Debug.Log("A sanidade chegou a zero! Fim de jogo.");
+        this.enabled = false;
+
+        // Mostra o cursor e o destrava
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        // Pausa o jogo atrás da tela preta
+        Time.timeScale = 0f;
+
+        // ATIVA a tela de Game Over em vez de carregar uma nova cena
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+        }
+        else
+        {
+            Debug.LogError("A referência para 'gameOverPanel' não foi configurada no Inspector do PlayerSanity!");
+        }
     }
 }
