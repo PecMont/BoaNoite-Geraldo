@@ -2836,9 +2836,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6299945f96ccd60448afaaac8614320e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 512
-  height: 512
-  baseColor: {r: 0.4, g: 0.5, b: 0.6, a: 1}
 --- !u!1 &298012690
 GameObject:
   m_ObjectHideFlags: 0
@@ -3401,7 +3398,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 414e25a6718b9074796b71272f88dfe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flashlight: {fileID: 0}
+  flashlight: {fileID: 705507994}
   toggleKey: 102
   batteryLife: 100
   batteryDrain: 0.01
