@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-// Esta linha garante que podemos encontrar a classe "Openable"
 using DoorScript;
 
 public class TeleportadorPorta : MonoBehaviour
@@ -11,9 +10,8 @@ public class TeleportadorPorta : MonoBehaviour
     public string tagDoJogador = "Player";
 
     [Header("Portas Físicas Associadas")]
-    // --- MUDANÇA AQUI ---
-    public Openable portaFisicaEntrada; // Era 'Door', agora é 'Openable'
-    public Openable portaFisicaSaida;   // Era 'Door', agora é 'Openable'
+    public Openable portaFisicaEntrada;
+    public Openable portaFisicaSaida;
 
     [Header("Configurações de Olhar na Saída (Opcional)")]
     public Transform olharParaEsteAlvoNaSaida;
@@ -32,12 +30,11 @@ public class TeleportadorPorta : MonoBehaviour
     {
         teletransportando = true;
 
-        // Nenhuma mudança necessária aqui, pois .open e .OpenDoor() existem em Openable
         if (portaFisicaEntrada != null)
         {
             if (portaFisicaEntrada.open)
             {
-                portaFisicaEntrada.OpenDoor(); // Isso vai fechar a porta
+                portaFisicaEntrada.OpenDoor();
                 Debug.Log("Fechando porta de entrada: " + portaFisicaEntrada.gameObject.name);
             }
         }
@@ -55,13 +52,12 @@ public class TeleportadorPorta : MonoBehaviour
 
         jogador.transform.position = pontoDeSaida.position;
 
-        // --- LÓGICA DE ROTAÇÃO (NÃO PRECISA DE MUDANÇA) ---
         if (olharParaEsteAlvoNaSaida != null)
         {
             Debug.Log("Alvo para olhar está DEFINIDO: " + olharParaEsteAlvoNaSaida.name + ". Calculando direção...");
             Vector3 direcaoParaOlhar = olharParaEsteAlvoNaSaida.position - jogador.transform.position;
             Debug.Log("Direção crua para o alvo: " + direcaoParaOlhar);
-            direcaoParaOlhar.y = 0; 
+            direcaoParaOlhar.y = 0;
             Debug.Log("Direção para o alvo (Y zerado): " + direcaoParaOlhar);
 
             if (direcaoParaOlhar != Vector3.zero)
@@ -80,19 +76,17 @@ public class TeleportadorPorta : MonoBehaviour
             Debug.Log("Nenhum alvo para olhar definido. Usando rotação do ponto de saída.");
             jogador.transform.rotation = pontoDeSaida.rotation;
         }
-        // --- FIM DA LÓGICA DE ROTAÇÃO ---
 
         if (cc != null)
         {
             cc.enabled = true;
         }
 
-        // Nenhuma mudança necessária aqui também
         if (portaFisicaSaida != null)
         {
             if (!portaFisicaSaida.open)
             {
-                portaFisicaSaida.OpenDoor(); // Isso vai abrir a porta
+                portaFisicaSaida.OpenDoor();
                 Debug.Log("Abrindo porta de saída: " + portaFisicaSaida.gameObject.name);
             }
         }

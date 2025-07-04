@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-// O namespace foi mantido para compatibilidade com seu script de câmera.
 namespace DoorScript
 {
     [RequireComponent(typeof(AudioSource))]
@@ -92,11 +91,9 @@ namespace DoorScript
         {
             if (GameProgression.instance.Progresso < requiredProgress)
             {
-                // --- MUDANÇA 1 ---
                 if (GameProgression.instance.Progresso < 4 && GameProgression.instance.Progresso > 2 && id == 1)
                 {
-                    // ANTES: GameProgression.instance.Progresso++;
-                    GameProgression.instance.AvancarProgresso(); // CORRIGIDO
+                    GameProgression.instance.AvancarProgresso();
                 }
                 else
                 {
@@ -109,15 +106,12 @@ namespace DoorScript
                 GameProgression.instance.AvancarProgresso();
             }
             {
-                // ANTES: GameProgression.instance.Progresso++;
-                GameProgression.instance.AvancarProgresso(); // CORRIGIDO
+                GameProgression.instance.AvancarProgresso();
             }
             
-            // --- MUDANÇA 2 ---
             if (GameProgression.instance.Progresso < 8 && GameProgression.instance.Progresso > 5 && id == 3)
             {
-                // ANTES: GameProgression.instance.Progresso++;
-                GameProgression.instance.AvancarProgresso(); // CORRIGIDO
+                GameProgression.instance.AvancarProgresso();
             }
 
             if (isUnlocked)

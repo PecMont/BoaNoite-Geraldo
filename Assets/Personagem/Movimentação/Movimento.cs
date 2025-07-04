@@ -12,8 +12,7 @@ public class Movimento : MonoBehaviour
     private float gravidade = -9.81f;
     private float velocidadeVertical = 0f;
 
-    // --- Variável para o Animator ---
-    private Animator animator; // <<< ADICIONAR
+    private Animator animator;
 
     public TMPro.TextMeshProUGUI feedbackText;
     public float distanciaInteracao = 2f;
@@ -23,28 +22,21 @@ public class Movimento : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         mycamera = Camera.main.transform;
-
-        // --- Pegar o componente Animator do objeto filho ---
-        // Usamos GetComponentInChildren porque o modelo 3D (com o Animator) é um filho.
-        animator = GetComponentInChildren<Animator>(); // <<< ADICIONAR
+        animator = GetComponentInChildren<Animator>();
     }
 
     void Update()
     {
-        
         transform.eulerAngles = new Vector3(0, mycamera.eulerAngles.y, 0);
 
         entradaJogador = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 
-        // --- Normalizar a entrada para evitar movimento mais rápido na diagonal ---
         if (entradaJogador.magnitude > 1)
         {
             entradaJogador.Normalize();
         }
-        
-        // --- ATUALIZAR O ANIMATOR ---
-        // Avisa o Animator qual a "velocidade" do jogador. Magnitude é 0 se parado, e 1 se movendo.
-        animator.SetFloat("Speed", entradaJogador.magnitude); // <<< ADICIONAR
+
+        animator.SetFloat("Speed", entradaJogador.magnitude);
 
         entradaJogador = transform.TransformDirection(entradaJogador);
 
@@ -65,11 +57,9 @@ public class Movimento : MonoBehaviour
             characterController.Move(direcaoMovimento * Time.deltaTime);
         }
 
-        // --- LÓGICA DE ANIMAÇÃO DE DANÇA ---
-        // Se a tecla 'P' (ou outra de sua escolha) for pressionada
-        if (Input.GetKeyDown(KeyCode.P)) // <<< ADICIONAR (Pode trocar 'P' por outra tecla)
+        if (Input.GetKeyDown(KeyCode.P))
         {
-            animator.SetTrigger("Dance"); // <<< ADICIONAR
+            animator.SetTrigger("Dance");
         }
 
         if (Input.GetKeyDown(KeyCode.E))
@@ -84,14 +74,10 @@ public class Movimento : MonoBehaviour
             TogglePause();
         }
         if(Input.GetKeyDown(KeyCode.L)){
-            // aumenta o progresso do jogo
             GameProgression.instance.Progresso++;
         }
     }
-    
-    // O resto do seu código continua igual...
-    // TogglePause(), TentarAbrirPorta(), TentarColetar(), LimparFeedback()
-    // ...
+
     #region Funções existentes
     void TogglePause()
     {
@@ -101,13 +87,13 @@ public class Movimento : MonoBehaviour
         {
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
-            Time.timeScale = 0f; // Pausa o jogo
+            Time.timeScale = 0f;
         }
         else
         {
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
-            Time.timeScale = 1f; // Retorna o jogo ao normal
+            Time.timeScale = 1f;
         }
     }
 
@@ -166,14 +152,9 @@ public class Movimento : MonoBehaviour
                 if(GameProgression.instance.Progresso == 7 ){
                     GameProgression.instance.AvancarProgresso();
                 }
-                
-                // Aqui você pode adicionar a lógica para fazer o tempo passar
-                // Por exemplo, mudar o horário do dia ou ativar/desativar luzes
             }
-        
         }
     }
-
 
     void LimparFeedback()
     {
